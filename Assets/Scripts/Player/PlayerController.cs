@@ -8,9 +8,9 @@ public enum GameType { Normal, Dream, Dig }
 public class PlayerController : MonoBehaviour
 {
     #region ÊýÖµ
-    private float moveSpeed = 5;
+    private float moveSpeed = 6;
     public float MoveSpeed { get => moveSpeed; private set => moveSpeed = value; }
-    private float jumpSpeed = 6;
+    private float jumpSpeed = 10;
     public float JumpSpeed { get => jumpSpeed; private set => jumpSpeed = value; }
     private float dashCD = 2.5f;
     private float jumpBufferTime = 0.25f;
