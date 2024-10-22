@@ -65,7 +65,7 @@ namespace TMPro.Examples
                 #endregion
 
                 #region Example of Link Handling
-                // Check if mouse intersects with any links.
+                // ClickOnce if mouse intersects with any links.
                 int linkIndex = TMP_TextUtilities.FindIntersectingLink(m_TextMeshPro, Input.mousePosition, m_Camera);
 
                 // Clear previous link selection if one existed.
@@ -107,7 +107,7 @@ namespace TMPro.Examples
 
 
                 #region Example of Word Selection
-                // Check if Mouse intersects any words and if so assign a random color to that word.
+                // ClickOnce if Mouse intersects any words and if so assign a random color to that word.
                 int wordIndex = TMP_TextUtilities.FindIntersectingWord(m_TextMeshPro, Input.mousePosition, Camera.main);
                 if (wordIndex != -1 && wordIndex != m_lastWordIndex)
                 {

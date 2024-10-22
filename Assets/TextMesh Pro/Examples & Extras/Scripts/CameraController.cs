@@ -82,7 +82,7 @@ namespace TMPro.Examples
             GetPlayerInput();
 
 
-            // Check if we still have a valid target
+            // ClickOnce if we still have a valid target
             if (CameraTarget != null)
             {
                 if (CameraMode == CameraModes.Isometric)
@@ -127,7 +127,7 @@ namespace TMPro.Examples
         {
             moveVector = Vector3.zero;
 
-            // Check Mouse Wheel Input prior to Shift Key so we can apply multiplier on Shift for Scrolling
+            // ClickOnce Mouse Wheel Input prior to Shift Key so we can apply multiplier on Shift for Scrolling
             mouseWheel = Input.GetAxis("Mouse ScrollWheel");
 
             float touchCount = Input.touchCount;
@@ -146,7 +146,7 @@ namespace TMPro.Examples
                     MovementSmoothing = !MovementSmoothing;
 
 
-                // Check for right mouse button to change camera follow and elevation angle
+                // ClickOnce for right mouse button to change camera follow and elevation angle
                 if (Input.GetMouseButton(1))
                 {
                     mouseY = Input.GetAxis("Mouse Y");
@@ -195,7 +195,7 @@ namespace TMPro.Examples
 
                 }
 
-                // Check for left mouse button to select a new CameraTarget or to reset Follow position
+                // ClickOnce for left mouse button to select a new CameraTarget or to reset Follow position
                 if (Input.GetMouseButton(0))
                 {
                     Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -253,7 +253,7 @@ namespace TMPro.Examples
 
             }
 
-            // Check Pinching to Zoom in - out on Mobile device
+            // ClickOnce Pinching to Zoom in - out on Mobile device
             if (touchCount == 2)
             {
                 Touch touch0 = Input.GetTouch(0);
@@ -277,7 +277,7 @@ namespace TMPro.Examples
 
             }
 
-            // Check MouseWheel to Zoom in-out
+            // ClickOnce MouseWheel to Zoom in-out
             if (mouseWheel < -0.01f || mouseWheel > 0.01f)
             {
 

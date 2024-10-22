@@ -23,6 +23,8 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region ״̬
+    private int curMineralCount;
+    public int CurMineralCount { get => curMineralCount; set => curMineralCount = value; }
     public bool Jump => playerInput.Jump;
     private bool canJump = false;
     public bool CanJump { get => canJump; private set => canJump = value; }
@@ -58,7 +60,7 @@ public class PlayerController : MonoBehaviour
     private InteractableItemDetector interactableItemDetector;
     private Animator animator;
     private Canvas canvas;
-    public QTEBar bar;
+    private QTEBar bar;
     #endregion
 
 
@@ -70,7 +72,6 @@ public class PlayerController : MonoBehaviour
         interactableItemDetector = GetComponentInChildren<InteractableItemDetector>();
         animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        bar = transform.Find("Canvas").Find("Bar").GetComponent<QTEBar>();
     }
 
     private void Update()

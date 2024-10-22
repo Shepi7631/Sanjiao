@@ -303,24 +303,26 @@ public class PlayerState_QTE : PlayerState
     {
         base.OnEnter();
         animator.Play("Idle");
-        playerController.bar.QTEStart(playerController.QTEBarBadLen, playerController.QTEBarGoodLen);
+        EventManager.OnMiningGameEndEvent += Exit;
+        EventManager.MiningGameStartEvent(playerController.QTEBarBadLen, playerController.QTEBarGoodLen);
     }
     public override void OnExit()
     {
         base.OnExit();
-
+        EventManager.OnMiningGameEndEvent -= Exit;
     }
     public override void OnUpdate()
     {
         base.OnUpdate();
-        if (playerInput.Fire)
-        {
-            playerController.bar.Check();
-            playerStateMachine.SwitchState(PlayerStateType.Idle);
-        }
     }
     public override void OnFixedUpdate()
     {
         base.OnFixedUpdate();
+    }
+
+    private void Exit()
+    {
+        playerStateMachine.SwitchState(PlayerStateType.Idle);
+        playerController.CurMineralCount++;
     }
 }
