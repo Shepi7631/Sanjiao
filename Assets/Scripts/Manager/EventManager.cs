@@ -11,6 +11,6 @@ public class EventManager : SingletonBase<EventManager>
     public static event Action<float, float> OnMiningGameStartEvent;
     public static void MiningGameStartEvent(float badLen, float goodLen) { OnMiningGameStartEvent?.Invoke(badLen, goodLen); }
 
-    public static event Action OnMiningGameEndEvent;
-    public static void MiningGameEndEvent() { OnMiningGameEndEvent?.Invoke(); }
+    public static event Action<bool> OnMiningGameEndEvent;
+    public static void MiningGameEndEvent(bool state) { OnMiningGameEndEvent?.Invoke(state); }
 }

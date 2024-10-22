@@ -34,6 +34,12 @@ public class QTEBar : MonoBehaviour
 
     [SerializeField] private Slider progressBar;
 
+    private float clickGap = 0.1f;
+
+    private float badLen;
+
+    private float goodLen;
+
     private float curValue = 0;
 
     private bool canInteract = false;
@@ -79,18 +85,10 @@ public class QTEBar : MonoBehaviour
     {
         pointerTransform.anchoredPosition = new Vector2(length * (curValue - 0.5f), pointerTransform.anchoredPosition.y);
         pointerInfo.text = curValue.ToString("F2");
-
-        if (canInteract && Input.GetKeyDown(KeyCode.Mouse0)) ClickOnce();
     }
 
-    public void QTEStart(float badLen, float goodLen)
+    private void InitQTEBar()
     {
-        Enable();
-        endFlag = false;
-        canInteract = false;
-        curValue = 0;
-        CurProgress = 0;
-
         float offset = Random.Range(-badLen, badLen);
         leftBadFillRRange = badLen + offset;
         leftGoodFillRRange = badLen + goodLen + offset;
@@ -103,6 +101,19 @@ public class QTEBar : MonoBehaviour
 
         rightBadFill.fillAmount = 1 - rightBadFillLRange;
         rightGoodFill.fillAmount = 1 - rightGoodFillLRange;
+    }
+
+    private void QTEStart(float badLen, float goodLen)
+    {
+        Enable();
+        canInteract = false;
+        curValue = 0;
+        CurProgress = 0;
+
+        this.badLen = badLen;
+        this.goodLen = goodLen;
+
+        InitQTEBar();
 
         DOTween.Sequence()
             .AppendCallback(() => infoPanel.ShowInfo("挖到矿了", waitTime))
@@ -111,39 +122,56 @@ public class QTEBar : MonoBehaviour
 
     }
 
-    public QTEType Check()
+    private QTEType Check()
     {
-        if (curValue < leftBadFillRRange) { CurProgress += 10; return QTEType.Bad; }
-        else if (curValue >= leftBadFillRRange && curValue < leftGoodFillRRange) { CurProgress += 20; return QTEType.Good; }
-        else if (curValue >= rightGoodFillLRange && curValue < rightBadFillLRange) { CurProgress += 20; return QTEType.Good; }
-        else if (curValue >= rightBadFillLRange) { CurProgress += 10; return QTEType.Bad; }
-        else { CurProgress += 30; return QTEType.Perfect; }
+        if (curValue < leftBadFillRRange) { return QTEType.Bad; }
+        else if (curValue >= leftBadFillRRange && curValue < leftGoodFillRRange) { return QTEType.Good; }
+        else if (curValue >= rightGoodFillLRange && curValue < rightBadFillLRange) { return QTEType.Good; }
+        else if (curValue >= rightBadFillLRange) { return QTEType.Bad; }
+        else { return QTEType.Perfect; }
     }
 
     public void ClickOnce()
     {
         if (!canInteract) return;
+        AudioManager.Instance.PlayEffect(AudioType.Dig);
 
         sequence.Pause();
         canInteract = false;
         QTEType checkState = Check();
 
-        if (curProgress < maxProgress)
+        switch (checkState)
         {
-            DOTween.Sequence()
-            .AppendCallback(() => infoPanel.ShowInfo(checkState.ToString(), waitTime))
+            case QTEType.Bad:
+                DOTween.Sequence()
+            .AppendCallback(() => infoPanel.ShowInfo("失败了！", waitTime))
             .AppendInterval(waitTime)
-            .AppendCallback(() => canInteract = true)
-            .AppendCallback(() => sequence.Play());
+            .AppendCallback(() => { EventManager.MiningGameEndEvent(false); Disable(); });
+                break;
+            case QTEType.Good:
+            case QTEType.Perfect:
+                CurProgress += Random.Range(10, 20);
+                if (checkState == QTEType.Perfect) CurProgress += Random.Range(10, 20);
+
+                if (curProgress < maxProgress)
+                {
+                    DOTween.Sequence()
+                        .AppendCallback(() => { infoPanel.ShowInfo(checkState.ToString(), waitTime); })
+                        .AppendInterval(waitTime)
+                        .AppendCallback(() => { InitQTEBar(); canInteract = true; sequence.Play(); })
+                        .AppendInterval(clickGap)
+                        .AppendCallback(() => { canInteract = true; });
+                }
+                else
+                {
+                    DOTween.Sequence()
+                        .AppendCallback(() => infoPanel.ShowInfo("成功了！", waitTime))
+                        .AppendInterval(waitTime)
+                        .AppendCallback(() => { EventManager.MiningGameEndEvent(true); Disable(); });
+                }
+                break;
         }
-        else
-        {
-            DOTween.Sequence()
-                .AppendCallback(() => infoPanel.ShowInfo("成功了！", waitTime))
-                .AppendInterval(waitTime)
-                .AppendCallback(() => EventManager.MiningGameEndEvent())
-                .AppendCallback(() => Disable());
-        }
+
     }
 
     public void Enable()

@@ -16,8 +16,8 @@ public class PlayerController : MonoBehaviour
     private float jumpBufferTime = 0.25f;
     private float landTime = 0.125f;
     public float LandTime { get => landTime; }
-    private float qteBarBadLen = 0.2f;
-    private float qteBarGoodLen = 0.2f;
+    private float qteBarBadLen = 0.3f;
+    private float qteBarGoodLen = 0.15f;
     public float QTEBarBadLen { get => qteBarBadLen; set => qteBarBadLen = value; }
     public float QTEBarGoodLen { get => qteBarGoodLen; set => qteBarGoodLen = value; }
     #endregion
@@ -60,7 +60,7 @@ public class PlayerController : MonoBehaviour
     private InteractableItemDetector interactableItemDetector;
     private Animator animator;
     private Canvas canvas;
-    private QTEBar bar;
+    public QTEBar qteBar;
     #endregion
 
 

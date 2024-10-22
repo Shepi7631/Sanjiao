@@ -270,6 +270,7 @@ public class PlayerState_Dig : PlayerState
         playerInput.Disable();
         playerController.SetVelocityX(0);
         playerController.SetVelocityY(0);
+        AudioManager.Instance.PlayEffect(AudioType.Dig);
     }
     public override void OnExit()
     {
@@ -314,15 +315,28 @@ public class PlayerState_QTE : PlayerState
     public override void OnUpdate()
     {
         base.OnUpdate();
+        if (playerInput.Fire)
+        {
+            playerController.qteBar.ClickOnce();
+        }
     }
     public override void OnFixedUpdate()
     {
         base.OnFixedUpdate();
     }
 
-    private void Exit()
+    private void Exit(bool state)
     {
         playerStateMachine.SwitchState(PlayerStateType.Idle);
-        playerController.CurMineralCount++;
+        if (state)
+        {
+            playerController.CurMineralCount++;
+            AudioManager.Instance.PlayEffect(AudioType.Win);
+        }
+        else
+        {
+            AudioManager.Instance.PlayEffect(AudioType.Lose);
+        }
+
     }
 }
