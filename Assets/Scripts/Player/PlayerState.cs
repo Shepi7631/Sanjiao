@@ -53,6 +53,7 @@ public class PlayerState_Idle : PlayerState
     public override void OnFixedUpdate()
     {
         base.OnFixedUpdate();
+        playerController.SetVelocityY(0);
     }
 }
 
@@ -79,10 +80,12 @@ public class PlayerState_Run : PlayerState
         else if (playerInput.Dash && playerController.CanDash) playerStateMachine.SwitchState(PlayerStateType.Dash);
         else if (playerController.Falling) playerStateMachine.SwitchState(PlayerStateType.Fall);
         else if (!playerInput.IsMoving) playerStateMachine.SwitchState(PlayerStateType.Idle);
+
     }
     public override void OnFixedUpdate()
     {
         base.OnFixedUpdate();
+        playerController.SetVelocityY(0);
         playerController.SetVelocityX(playerController.MoveSpeed * playerInput.MoveX);
     }
 }
@@ -303,7 +306,7 @@ public class PlayerState_QTE : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Idle");
+        animator.Play("Player_Idle");
         EventManager.OnMiningGameEndEvent += Exit;
         EventManager.MiningGameStartEvent(playerController.QTEBarBadLen, playerController.QTEBarGoodLen);
     }
