@@ -12,6 +12,8 @@ public class PlayerInput : MonoBehaviour
 
     public bool Dash => playerInputActions.GamePlay.Dash.WasPressedThisFrame();
 
+    public bool Fire => playerInputActions.GamePlay.Fire.WasPressedThisFrame();
+
     public bool IsMoving => move.x != 0;
 
     public float MoveX => move.x;

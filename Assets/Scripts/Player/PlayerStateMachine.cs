@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum PlayerStateType
 {
-    Idle, Run, Jump, Fall, Land, Dash
+    Idle, Run, Jump, Fall, Land, Dash, Driving, Dig, QTE
 }
 
 public class PlayerStateMachine : MonoBehaviour
@@ -19,11 +19,15 @@ public class PlayerStateMachine : MonoBehaviour
 
     private Dictionary<PlayerStateType, PlayerState> stateDic = new();
 
+    private PlayerState_Driving drivingState;
+
     private void Awake()
     {
         animator = GetComponentInChildren<Animator>();
         playerController = GetComponent<PlayerController>();
         playerInput = GetComponent<PlayerInput>();
+
+        drivingState = new PlayerState_Driving(this, playerController, animator, playerInput);
 
         stateDic.Add(PlayerStateType.Idle, new PlayerState_Idle(this, playerController, animator, playerInput));
         stateDic.Add(PlayerStateType.Run, new PlayerState_Run(this, playerController, animator, playerInput));
@@ -31,11 +35,24 @@ public class PlayerStateMachine : MonoBehaviour
         stateDic.Add(PlayerStateType.Fall, new PlayerState_Fall(this, playerController, animator, playerInput));
         stateDic.Add(PlayerStateType.Land, new PlayerState_Land(this, playerController, animator, playerInput));
         stateDic.Add(PlayerStateType.Dash, new PlayerState_Dash(this, playerController, animator, playerInput));
+        stateDic.Add(PlayerStateType.Driving, drivingState);
+        stateDic.Add(PlayerStateType.Dig, new PlayerState_Dig(this, playerController, animator, playerInput));
+        stateDic.Add(PlayerStateType.QTE, new PlayerState_QTE(this, playerController, animator, playerInput));
     }
 
     private void Start()
     {
         SwitchState(PlayerStateType.Idle);
+    }
+
+    private void OnEnable()
+    {
+
+    }
+
+    private void OnDisable()
+    {
+
     }
 
     private void Update()
@@ -61,5 +78,8 @@ public class PlayerStateMachine : MonoBehaviour
         Debug.Log(state);
     }
 
-
+    public void SetDrivingParameter(Car car)
+    {
+        drivingState.SetParameter(car);
+    }
 }

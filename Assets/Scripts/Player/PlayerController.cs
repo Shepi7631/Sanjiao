@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Windows;
+public enum GameType { Normal, Dream, Dig }
 
 public class PlayerController : MonoBehaviour
 {
@@ -15,6 +16,10 @@ public class PlayerController : MonoBehaviour
     private float jumpBufferTime = 0.25f;
     private float landTime = 0.125f;
     public float LandTime { get => landTime; }
+    private float qteBarBadLen = 0.2f;
+    private float qteBarGoodLen = 0.2f;
+    public float QTEBarBadLen { get => qteBarBadLen; set => qteBarBadLen = value; }
+    public float QTEBarGoodLen { get => qteBarGoodLen; set => qteBarGoodLen = value; }
     #endregion
 
     #region ״̬
@@ -37,6 +42,10 @@ public class PlayerController : MonoBehaviour
     {
         get => CurDashCD < 0;
     }
+    private bool canIteract = true;
+    public bool CanIteract { get => canIteract; set => canIteract = value; }
+
+    [SerializeField] private GameType gameType;
     //public PlayerStateType curPlayerState;
     //public PlayerStateType prePlayerState;
     #endregion
@@ -46,7 +55,10 @@ public class PlayerController : MonoBehaviour
     private PlayerInput playerInput;
     private Rigidbody2D rb;
     private GroundDetector groundDetector;
+    private InteractableItemDetector interactableItemDetector;
     private Animator animator;
+    private Canvas canvas;
+    public QTEBar bar;
     #endregion
 
 
@@ -55,8 +67,10 @@ public class PlayerController : MonoBehaviour
         stateMachine = GetComponent<PlayerStateMachine>();
         playerInput = GetComponent<PlayerInput>();
         groundDetector = GetComponentInChildren<GroundDetector>();
+        interactableItemDetector = GetComponentInChildren<InteractableItemDetector>();
         animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        bar = transform.Find("Canvas").Find("Bar").GetComponent<QTEBar>();
     }
 
     private void Update()
@@ -86,6 +100,16 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector3(rb.velocity.x, y, 0);
     }
 
+    public void DisableGravity()
+    {
+        rb.gravityScale = 0;
+    }
+
+    public void EnableGravity()
+    {
+        rb.gravityScale = 1;
+    }
+
     public void ResetJump()
     {
         CanJump = true;
@@ -101,4 +125,39 @@ public class PlayerController : MonoBehaviour
     {
         CurDashCD = dashCD;
     }
+
+    public void SetPos(Vector3 pos)
+    {
+        rb.position = pos;
+    }
+
+    public void SetCanvas(bool state)
+    {
+        canvas.enabled = state;
+    }
+
+    public void Interact()
+    {
+        switch (gameType)
+        {
+            case GameType.Normal:
+                break;
+            case GameType.Dream:
+                if (!interactableItemDetector.interactable || !CanIteract) return;
+                InteractableItem item = interactableItemDetector.GetItem();
+                switch (item.name)
+                {
+                    case ("Car"):
+                        Car car = (Car)item;
+                        stateMachine.SetDrivingParameter(car);
+                        stateMachine.SwitchState(PlayerStateType.Driving);
+                        break;
+                }
+                break;
+            case GameType.Dig:
+                stateMachine.SwitchState(PlayerStateType.Dig);
+                break;
+        }
+    }
+
 }

@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,10 +43,12 @@ public class PlayerState_Idle : PlayerState
     public override void OnUpdate()
     {
         base.OnUpdate();
+
         if (playerController.IsGround && playerController.Jump && playerController.CanJump) playerStateMachine.SwitchState(PlayerStateType.Jump);
         else if (playerInput.Dash && playerController.CanDash) playerStateMachine.SwitchState(PlayerStateType.Dash);
         else if (playerController.Falling) playerStateMachine.SwitchState(PlayerStateType.Fall);
         else if (playerInput.IsMoving) playerStateMachine.SwitchState(PlayerStateType.Run);
+        else if (playerInput.Fire) playerController.Interact();
     }
     public override void OnFixedUpdate()
     {
@@ -71,6 +74,7 @@ public class PlayerState_Run : PlayerState
     public override void OnUpdate()
     {
         base.OnUpdate();
+
         if (playerController.IsGround && playerController.Jump && playerController.CanJump) playerStateMachine.SwitchState(PlayerStateType.Jump);
         else if (playerInput.Dash && playerController.CanDash) playerStateMachine.SwitchState(PlayerStateType.Dash);
         else if (playerController.Falling) playerStateMachine.SwitchState(PlayerStateType.Fall);
@@ -202,6 +206,118 @@ public class PlayerState_Dash : PlayerState
         playerController.SetVelocityY(0);
         timer += Time.deltaTime;
         if (timer >= 0.3f) playerStateMachine.SwitchState(PlayerStateType.Idle);
+    }
+    public override void OnFixedUpdate()
+    {
+        base.OnFixedUpdate();
+    }
+}
+
+public class PlayerState_Driving : PlayerState
+{
+    private Car car;
+    public PlayerState_Driving(PlayerStateMachine stateMachine, PlayerController playerController, Animator animator, PlayerInput playerInput) : base(stateMachine, playerController, animator, playerInput)
+    {
+    }
+
+    public void SetParameter(Car car) { this.car = car; }
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        animator.Play("Dash");
+        playerInput.Disable();
+        playerController.CanIteract = false;
+        playerController.DisableGravity();
+        playerController.SetVelocityX(0);
+        playerController.SetVelocityY(0);
+        car.transform.position = car.startPos.position;
+        Sequence sequence = DOTween.Sequence()
+            .Append(car.transform.DOMove(car.endPos.position, car.drivingDuration))
+            .AppendCallback(() => { playerStateMachine.SwitchState(PlayerStateType.Idle); });
+    }
+    public override void OnExit()
+    {
+        base.OnExit();
+        playerInput.Enable();
+        playerController.CanIteract = true;
+        playerController.EnableGravity();
+    }
+    public override void OnUpdate()
+    {
+        base.OnUpdate();
+        playerController.SetPos(car.transform.position);
+    }
+    public override void OnFixedUpdate()
+    {
+        base.OnFixedUpdate();
+    }
+}
+
+public class PlayerState_Dig : PlayerState
+{
+    private float timer = 0;
+    public PlayerState_Dig(PlayerStateMachine stateMachine, PlayerController playerController, Animator animator, PlayerInput playerInput) : base(stateMachine, playerController, animator, playerInput)
+    {
+    }
+
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        animator.Play("Dig");
+        timer = 0;
+        playerInput.Disable();
+        playerController.SetVelocityX(0);
+        playerController.SetVelocityY(0);
+    }
+    public override void OnExit()
+    {
+        base.OnExit();
+        playerInput.Enable();
+    }
+    public override void OnUpdate()
+    {
+        base.OnUpdate();
+        timer += Time.deltaTime;
+        if (timer >= 0.25f)
+        {
+            if (MiningGameManager.Instance.DigFeedBack(playerController.transform.position.x)) playerStateMachine.SwitchState(PlayerStateType.QTE);
+            else playerStateMachine.SwitchState(PlayerStateType.Idle);
+        }
+    }
+    public override void OnFixedUpdate()
+    {
+        base.OnFixedUpdate();
+    }
+}
+
+public class PlayerState_QTE : PlayerState
+{
+    public PlayerState_QTE(PlayerStateMachine stateMachine, PlayerController playerController, Animator animator, PlayerInput playerInput) : base(stateMachine, playerController, animator, playerInput)
+    {
+    }
+
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        animator.Play("Idle");
+        playerController.bar.QTEStart(playerController.QTEBarBadLen, playerController.QTEBarGoodLen);
+    }
+    public override void OnExit()
+    {
+        base.OnExit();
+
+    }
+    public override void OnUpdate()
+    {
+        base.OnUpdate();
+        if (playerInput.Fire)
+        {
+            playerController.bar.Check();
+            playerStateMachine.SwitchState(PlayerStateType.Idle);
+        }
     }
     public override void OnFixedUpdate()
     {
