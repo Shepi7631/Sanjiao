@@ -20,6 +20,10 @@ public class InteractableItemDetector : MonoBehaviour
             curItem = collision.GetComponent<InteractableItem>();
             interactable = true;
             EventManager.ChangeInteractInfoEvent(interactable);
+            if (curItem.canInteract)
+                UIManager.Instance.SetTipsInfo("单击进行互动");
+            else
+                UIManager.Instance.SetTipsInfo("该道具暂时不能使用");
         }
     }
 
@@ -29,6 +33,7 @@ public class InteractableItemDetector : MonoBehaviour
         {
             interactable = false;
             EventManager.ChangeInteractInfoEvent(interactable);
+            UIManager.Instance.SetTipsInfo("");
         }
     }
 

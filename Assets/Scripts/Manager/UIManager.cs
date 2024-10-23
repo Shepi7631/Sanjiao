@@ -8,10 +8,16 @@ public class UIManager : SingletonBase<UIManager>
 {
     [SerializeField] private TextMeshProUGUI interactInfo;
     [SerializeField] private TextMeshProUGUI miningGameInfo;
+    [SerializeField] private Text tips;
 
     private void Awake()
     {
 
+    }
+
+    public void SetTipsInfo(string text)
+    {
+        tips.text = text;
     }
 
     public void ChangeInteractInfo(bool state)
