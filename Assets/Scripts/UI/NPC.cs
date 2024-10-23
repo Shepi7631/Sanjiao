@@ -65,22 +65,19 @@ public class NPC : MonoBehaviour
             string[] cells = dialogRows[i].Split(',');
             if (cells[0]=="#"&& int.Parse(cells[1]) == dialogIndex)
             {
-                if (cells[6]=="1")//检测为真的时候，修改跳转索引值（这里是主角）
+                if(cells[6] == "1")//检测为真的时候，修改跳转索引值（这里是主角）
                 {
-                    
+
                     foreach (var person in state)
-                    {
-                                            //Debug.Log(person.effect);
+                    {                        
                         if (person.name == "主角")
                         {
-                            cells[4]=person.effect;//主角的effect的修改在另外的函数中已经执行了
+                            cells[4] = person.effect;//主角的effect的修改在另外的函数中已经执行了
                             person.effect = "0";
                         }
                     }
 
                 }
-                //Debug.Log("将会跳转到");
-                //Debug.Log(cells[4]);
                 UpdateText(cells[7], cells[3]);//cells[7]是人名，cells[3]是对话内容
                 UpdateImage(cells[2]);
                 dialogIndex =int.Parse( cells[4]);//cells[4]是要跳转的索引值
