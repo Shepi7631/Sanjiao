@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class PlayerState : IState
@@ -53,7 +54,6 @@ public class PlayerState_Idle : PlayerState
     public override void OnFixedUpdate()
     {
         base.OnFixedUpdate();
-        playerController.SetVelocityY(0);
     }
 }
 
@@ -85,7 +85,6 @@ public class PlayerState_Run : PlayerState
     public override void OnFixedUpdate()
     {
         base.OnFixedUpdate();
-        playerController.SetVelocityY(0);
         playerController.SetVelocityX(playerController.MoveSpeed * playerInput.MoveX);
     }
 }
@@ -159,6 +158,7 @@ public class PlayerState_Land : PlayerState
         base.OnEnter();
         animator.Play("Land");
         timer = 0;
+        playerController.SetVelocityX(0);
         playerController.ResetJump();
     }
     public override void OnExit()
@@ -219,6 +219,7 @@ public class PlayerState_Dash : PlayerState
 public class PlayerState_Driving : PlayerState
 {
     private Car car;
+    private float timer = 0;
     public PlayerState_Driving(PlayerStateMachine stateMachine, PlayerController playerController, Animator animator, PlayerInput playerInput) : base(stateMachine, playerController, animator, playerInput)
     {
     }
@@ -229,15 +230,14 @@ public class PlayerState_Driving : PlayerState
     {
         base.OnEnter();
         animator.Play("Dash");
+        timer = 0;
         playerInput.Disable();
+        if (car.right) playerController.SetVelocityX(float.Epsilon);
+        else playerController.SetVelocityX(-float.Epsilon);
         playerController.CanIteract = false;
         playerController.DisableGravity();
         playerController.SetVelocityX(0);
         playerController.SetVelocityY(0);
-        car.transform.position = car.startPos.position;
-        Sequence sequence = DOTween.Sequence()
-            .Append(car.transform.DOMove(car.endPos.position, car.drivingDuration))
-            .AppendCallback(() => { playerStateMachine.SwitchState(PlayerStateType.Idle); });
     }
     public override void OnExit()
     {
@@ -249,11 +249,13 @@ public class PlayerState_Driving : PlayerState
     public override void OnUpdate()
     {
         base.OnUpdate();
-        playerController.SetPos(car.transform.position);
+        timer += Time.deltaTime;
+        if (timer >= car.drivingDuration) playerStateMachine.SwitchState(PlayerStateType.Idle);
     }
     public override void OnFixedUpdate()
     {
         base.OnFixedUpdate();
+        playerController.SetPos(car.transform.position);
     }
 }
 

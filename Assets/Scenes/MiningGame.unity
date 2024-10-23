@@ -334,7 +334,7 @@ GameObject:
   - component: {fileID: 70853202}
   - component: {fileID: 70853201}
   - component: {fileID: 70853204}
-  m_Layer: 9
+  m_Layer: 8
   m_Name: Car
   m_TagString: Interactable
   m_Icon: {fileID: 0}
@@ -353,9 +353,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd466b64638f71a47baf4017c99a815a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canInteract: 0
   startPos: {fileID: 277605244}
   endPos: {fileID: 29171759}
   drivingDuration: 1
+  right: 0
 --- !u!212 &70853202
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -612,7 +614,7 @@ GameObject:
   - component: {fileID: 208544305}
   - component: {fileID: 208544306}
   - component: {fileID: 208544307}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: InteractableItemDetector
   m_TagString: Untagged
   m_Icon: {fileID: 0}

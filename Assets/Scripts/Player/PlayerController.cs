@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     #region ÊýÖµ
     private float moveSpeed = 6;
     public float MoveSpeed { get => moveSpeed; private set => moveSpeed = value; }
-    private float jumpSpeed = 10;
+    private float jumpSpeed = 18f;
     public float JumpSpeed { get => jumpSpeed; private set => jumpSpeed = value; }
     private float dashCD = 2.5f;
     private float jumpBufferTime = 0.25f;
@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     private float qteBarGoodLen = 0.15f;
     public float QTEBarBadLen { get => qteBarBadLen; set => qteBarBadLen = value; }
     public float QTEBarGoodLen { get => qteBarGoodLen; set => qteBarGoodLen = value; }
+    private float originGravityScale;
     #endregion
 
     #region ×´Ì¬
@@ -72,6 +73,7 @@ public class PlayerController : MonoBehaviour
         interactableItemDetector = GetComponentInChildren<InteractableItemDetector>();
         animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        originGravityScale = rb.gravityScale;
     }
 
     private void Update()
@@ -80,6 +82,8 @@ public class PlayerController : MonoBehaviour
         JumpBuffer -= Time.deltaTime;
         if (playerInput.Jump) JumpBuffer = jumpBufferTime;
     }
+
+
 
     public void SetVelocityX(float x)
     {
@@ -108,7 +112,7 @@ public class PlayerController : MonoBehaviour
 
     public void EnableGravity()
     {
-        rb.gravityScale = 1;
+        rb.gravityScale = originGravityScale;
     }
 
     public void ResetJump()
@@ -146,12 +150,18 @@ public class PlayerController : MonoBehaviour
             case GameType.Dream:
                 if (!interactableItemDetector.interactable || !CanIteract) return;
                 InteractableItem item = interactableItemDetector.GetItem();
-                switch (item.name)
+                if (!item.canInteract) return;
+                switch (item.itemName)
                 {
                     case ("Car"):
                         Car car = (Car)item;
                         stateMachine.SetDrivingParameter(car);
                         stateMachine.SwitchState(PlayerStateType.Driving);
+                        car.Interact();
+                        break;
+                    case ("PullRod"):
+                        PullRod pullRod = (PullRod)item;
+                        pullRod.Interact();
                         break;
                 }
                 break;
