@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class InteractableItemDetector : MonoBehaviour
 {
     private CircleCollider2D circleCollider2D;
@@ -13,17 +15,19 @@ public class InteractableItemDetector : MonoBehaviour
         circleCollider2D = GetComponent<CircleCollider2D>();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.tag == "Interactable")
         {
             curItem = collision.GetComponent<InteractableItem>();
             interactable = true;
             EventManager.ChangeInteractInfoEvent(interactable);
-            if (curItem.canInteract)
+            if (curItem.curState == ItemStateType.Interact)
                 UIManager.Instance.SetTipsInfo("单击进行互动");
-            else
+            else if (curItem.curState == ItemStateType.Close)
                 UIManager.Instance.SetTipsInfo("该道具暂时不能使用");
+            else if (curItem.curState == ItemStateType.Used)
+                UIManager.Instance.SetTipsInfo("该道具已被使用过");
         }
     }
 

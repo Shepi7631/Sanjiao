@@ -16,7 +16,8 @@ public class PullRod : InteractableItem
         animator.SetBool("Open", true);
         foreach (var item in interactableItems)
         {
-            item.canInteract = true;
+            if (item.curState == ItemStateType.Close) item.curState = ItemStateType.Interact;
         }
+        curState = ItemStateType.Close;
     }
 }

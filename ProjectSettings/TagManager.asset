@@ -43,6 +43,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: dialog UI
+  - name: Back
+    uniqueID: 3674657049
+    locked: 0
+  - name: Middle
+    uniqueID: 698645271
+    locked: 0
+  - name: Front
+    uniqueID: 657795733
+    locked: 0
+  - name: UI
     uniqueID: 2855617525
     locked: 0
