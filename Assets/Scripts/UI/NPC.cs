@@ -95,14 +95,17 @@ public class NPC : MonoBehaviour
             {
                 
 
-                //UpdateText(cells[7], cells[3]);
-                //UpdateImage(cells[2]);
+                /*测试用
+                 UpdateText(cells[7], cells[3]);
+                UpdateImage(cells[2]);
                 dialogIndex = int.Parse(cells[4]);
+                */
+
 
                 //这里应该让ui组件消失的，但是不知道用什么控件
 
                 dialogstate.flagid = cells[5];//赋一个flagid值用于确定下次开始的位置
-                
+                Debug.Log("flagid changed");
                 break;
             }
         }
@@ -145,15 +148,16 @@ public class NPC : MonoBehaviour
             else if (cells[0] == "END" && int.Parse(cells[1]) == dialogIndex)
             {
 
-
-                //UpdateText(cells[7], cells[3]);
-                //UpdateImage(cells[2]);
-                dialogIndex = int.Parse(cells[4]);
+                /*测试用
+                  UpdateText(cells[7], cells[3]);
+                  UpdateImage(cells[2]);
+                  dialogIndex = int.Parse(cells[4]);
+                                */
 
                 //这里应该让ui组件消失的，但是不知道用什么控件
 
                 dialogstate.flagid = cells[5];//赋一个flagid值用于确定下次开始的位置
-
+                Debug.Log("flagid changed");
                 break;
             }
         }
