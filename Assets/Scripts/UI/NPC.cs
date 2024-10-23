@@ -171,6 +171,7 @@ public class NPC : MonoBehaviour
             button.GetComponent<Button>().onClick.AddListener(
                 delegate 
                 {
+                    if (cells[5] != " ") 
                     OptionEffect(cells[5], cells[7]);//修改state队列里主角的索引值
                     OnOptionClick(int.Parse(cells[4])); //cells[4]是需要跳转的序号
                    
