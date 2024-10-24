@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     {
         get
         {
-            if (curAgeType == AgeType.Children) return jumpSpeed * 0.75f;
+            if (curAgeType == AgeType.Children) return jumpSpeed * 0.85f;
             else if (curAgeType == AgeType.Young) return jumpSpeed;
             else return 0;
         }
@@ -55,10 +55,10 @@ public class PlayerController : MonoBehaviour
         {
             if (curAgeType == AgeType.Children) return 0.4f * originScale;
             else if (curAgeType == AgeType.Young) return 0.8f * originScale;
-            else return 0.6f * originScale;
+            else return 0.8f * originScale;
         }
     }
-
+    public bool Warning => specialAreaDetector.InSpecialArea;
     public bool Jump => playerInput.Jump;
     private bool canJump = false;
     public bool CanJump
@@ -106,6 +106,7 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private Canvas canvas;
     public QTEBar qteBar;
+    public SpecialAreaDetector specialAreaDetector;
     public List<GameObject> specialList = new List<GameObject>();
     #endregion
 
@@ -119,6 +120,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody2D>();
         originGravityScale = rb.gravityScale;
+        specialAreaDetector = GetComponentInChildren<SpecialAreaDetector>();
     }
 
     private void Update()
@@ -216,7 +218,7 @@ public class PlayerController : MonoBehaviour
                         break;
                     case ("FinishLine"):
                         FinishLine finishLine = (FinishLine)item;
-                        if (Gold >= finishLine.goldLimit)
+                        if (Gold >= GameManager.Instance.GoldLimit)
                             finishLine.Interact();
                         break;
                     case ("Gold"):
@@ -235,6 +237,7 @@ public class PlayerController : MonoBehaviour
     public void AgeForward()
     {
         if (curAgeType == AgeType.Older) GameManager.Instance.Remake();
+        else if (curAgeType == AgeType.Children && Warning) GameManager.Instance.Remake();
         else curAgeType++;
 
         transform.localScale = CurScale;

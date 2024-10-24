@@ -24,6 +24,8 @@ public class GameManager : SingletonBase<GameManager>
 
     private int maxCount;
 
+    public int GoldLimit;
+
 
     private int curLevel = 0;
 
@@ -63,8 +65,9 @@ public class GameManager : SingletonBase<GameManager>
                 NextLevel();
             }
         }
-        UIManager.Instance.timerText.text = "衰老倒计时：" + ageTimer.ToString("f2") + "/" + maxTimer.ToString();
-        UIManager.Instance.countText.text = "衰老次数：" + curCount.ToString() + "/" + maxCount.ToString();
+        UIManager.Instance.timerText.text = "衰老倒计时：" + ageTimer.ToString("f2") + "/" + maxTimer;
+        UIManager.Instance.countText.text = "衰老次数：" + curCount.ToString() + "/" + maxCount;
+        UIManager.Instance.goldText.text = "收集品数量" + playerController.Gold + "/" + GoldLimit;
     }
 
     public void NextLevel()
@@ -111,6 +114,7 @@ public class GameManager : SingletonBase<GameManager>
                 maxTimer = 15;
                 curCount = 0;
                 maxCount = 5;
+                GoldLimit = 3;
                 infoPanel.enabled = false;
                 break;
         }

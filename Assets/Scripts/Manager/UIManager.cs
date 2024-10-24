@@ -11,6 +11,7 @@ public class UIManager : SingletonBase<UIManager>
     [SerializeField] private Text tips;
     public Text timerText;
     public Text countText;
+    public Text goldText;
 
     private void Awake()
     {

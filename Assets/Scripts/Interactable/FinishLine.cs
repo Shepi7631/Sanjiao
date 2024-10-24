@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class FinishLine : InteractableItem
 {
-    public int goldLimit;
     public override void Interact()
     {
         AudioManager.Instance.PlayEffect(AudioType.Open);
