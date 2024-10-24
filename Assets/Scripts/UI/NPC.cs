@@ -43,13 +43,15 @@ public class NPC : MonoBehaviour
         imageDic["护卫军"] = sprites[9];
         imageDic["王朵"]= sprites[6];
         imageDic["工头"] = sprites[5];
+        imageDic["老板娘"] = sprites[2];
+        imageDic["兜帽人"] = sprites[7];
 
         //将初始化的角色存入list中
         dialogstate mainrole = new dialogstate();
        
         mainrole.effect = "0";
         mainrole.name = "主角";
-        mainrole.dialogTextIndex = 0;
+        mainrole.dialogTextIndex = 6;
         state.Add(mainrole);
       
 
