@@ -40,15 +40,18 @@ public class NPC : MonoBehaviour
         imageDic["妻子"] = sprites[6];
         imageDic["药店老板"] = sprites[7];
         imageDic["买药的人"] = sprites[8];
-        imageDic["警卫队"] = sprites[9];
+        imageDic["护卫军"] = sprites[9];
+        imageDic["王朵"]= sprites[6];
+        imageDic["工头"] = sprites[5];
 
         //将初始化的角色存入list中
         dialogstate mainrole = new dialogstate();
-        dialogstate.flagid = "0";
+       
         mainrole.effect = "0";
         mainrole.name = "主角";
         mainrole.dialogTextIndex = 0;
         state.Add(mainrole);
+      
 
     }//初始化人物信息
     public void UpdateText(string _name, string _text)
@@ -84,7 +87,7 @@ public class NPC : MonoBehaviour
                         if (person.name == "主角")
                         {
                             cells[4] = person.effect;//主角的effect的修改在另外的函数中已经执行了
-                            person.effect = "0";
+                            person.effect = "";
                         }
                     }
 
@@ -114,8 +117,9 @@ public class NPC : MonoBehaviour
                 nameText.gameObject.SetActive(false);
                 figure.gameObject.SetActive(false);
                 dialogbox.gameObject.SetActive(false);
-                dialogstate.flagid = cells[5];//赋一个flagid值用于确定下次开始的位置
+                dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置
                 Debug.Log("flagid changed");
+                
                 break;
             }
         }
@@ -123,59 +127,67 @@ public class NPC : MonoBehaviour
     }
     public void ShowDialogRow(int i)
     {
-
-        for (int j=i ; j < dialogRows.Length; j++)
+        
+        
+        for (int j = 1; j < dialogRows.Length; j++)
         {
+
             string[] cells = dialogRows[j].Split(',');
-            if (cells[0] == "#" && int.Parse(cells[1]) == dialogIndex)
-            {
-                if (cells[6] == "1")//检测为真的时候，修改跳转索引值（这里是主角）
-                {
-
-                    foreach (var person in state)
+            if (int.Parse(cells[1]) < i)
+                continue;
+                
+                    if (cells[0] == "#" && int.Parse(cells[1]) == dialogIndex)
                     {
-                        //Debug.Log(person.effect);
-                        if (person.name == "主角")
+                        if (cells[6] == "1")//检测为真的时候，修改跳转索引值（这里是主角）
                         {
-                            cells[4] = person.effect;//主角的effect的修改在另外的函数中已经执行了
-                            person.effect = "0";
+
+                            foreach (var person in state)
+                            {
+                                //Debug.Log(person.effect);
+                                if (person.name == "主角")
+                                {
+                                    cells[4] = person.effect;//主角的effect的修改在另外的函数中已经执行了
+                                    person.effect = "";
+                                }
+                            }
+
                         }
+                        //Debug.Log("将会跳转到");
+                        //Debug.Log(cells[4]);
+                        UpdateText(cells[7], cells[3]);//cells[7]是人名，cells[3]是对话内容
+                        UpdateImage(cells[2]);
+                        dialogIndex = int.Parse(cells[4]);//cells[4]是要跳转的索引值
+                        break;
                     }
+                    else if (cells[0] == "&" && int.Parse(cells[1]) == dialogIndex)
+                    {
+                        nextbutton.gameObject.SetActive(false);
+                        GenerateOption(j);
+                    }
+                    else if (cells[0] == "END" && int.Parse(cells[1]) == dialogIndex)
+                    {
 
-                }
-                //Debug.Log("将会跳转到");
-                //Debug.Log(cells[4]);
-                UpdateText(cells[7], cells[3]);//cells[7]是人名，cells[3]是对话内容
-                UpdateImage(cells[2]);
-                dialogIndex = int.Parse(cells[4]);//cells[4]是要跳转的索引值
+                        /*测试用
+                          UpdateText(cells[7], cells[3]);
+                          UpdateImage(cells[2]);
+                          dialogIndex = int.Parse(cells[4]);
+                                        */
+
+                        nextbutton.gameObject.SetActive(false);
+                        dialogText.gameObject.SetActive(false);
+                        nameText.gameObject.SetActive(false);
+                        figure.gameObject.SetActive(false);
+                        dialogbox.gameObject.SetActive(false);
+
+                        dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
+                        Debug.Log(cells[5]);
+
                 break;
-            }
-            else if (cells[0] == "&" && int.Parse(cells[1]) == dialogIndex)
-            {
-                nextbutton.gameObject.SetActive(false);
-                GenerateOption(j);
-            }
-            else if (cells[0] == "END" && int.Parse(cells[1]) == dialogIndex)
-            {
+                    }
+                
 
-                /*测试用
-                  UpdateText(cells[7], cells[3]);
-                  UpdateImage(cells[2]);
-                  dialogIndex = int.Parse(cells[4]);
-                                */
-
-                nextbutton.gameObject.SetActive(false);
-                dialogText.gameObject.SetActive(false);
-                nameText.gameObject.SetActive(false);
-                figure.gameObject.SetActive(false);
-                dialogbox.gameObject.SetActive(false);
-
-                dialogstate.flagid = cells[5];//赋一个flagid值用于确定下次开始的位置
-                Debug.Log("flagid changed");
-                break;
-            }
+            
         }
-
     }
     public void GenerateOption(int _index)
     {
@@ -221,34 +233,52 @@ public class NPC : MonoBehaviour
         }
       
     }//产生效果的事件
-
     public void triggle()
     {
-        Start();
+       
+            nextbutton.gameObject.SetActive(true);
+
+            dialogText.gameObject.SetActive(true);
+
+            nameText.gameObject.SetActive(true);
+
+            figure.gameObject.SetActive(true);
+
+            dialogbox.gameObject.SetActive(true);
+
+        ReadText(dialogDataFile[state[0].dialogTextIndex]);
+        ShowDialogRow(dialogIndex);
+    }
+
+    public void triggle(int TextIndex,int beginindex)
+    {
+
+        nextbutton.gameObject.SetActive(true);
+
+        dialogText.gameObject.SetActive(true);
+
+        nameText.gameObject.SetActive(true);
+
+        figure.gameObject.SetActive(true);
+
+        dialogbox.gameObject.SetActive(true);
+        state[0].dialogTextIndex = TextIndex;
+        ReadText(dialogDataFile[state[0].dialogTextIndex]);
+        ShowDialogRow(beginindex);
     }
     private void Start()
-    {
-        
-        
-        ReadText(dialogDataFile[state[0].dialogTextIndex]);
-        int j=0;
-        
-        //确定对话开始的起始位置
-        foreach (var person in state)
-        {
-            if (person.name == "主角")
-            {
-                 j = int.Parse(dialogstate.flagid);
-                
-            }
-        }
-        nextbutton.gameObject.SetActive(true);
-        dialogText.gameObject.SetActive(true);
-        nameText.gameObject.SetActive(true);
-        figure.gameObject.SetActive(true);
-        dialogbox.gameObject.SetActive(true);
-        ShowDialogRow(j);
-        
+    {        
+               ReadText(dialogDataFile[state[0].dialogTextIndex]);
+        nextbutton.gameObject.SetActive(false);
+
+        dialogText.gameObject.SetActive(false);
+
+        nameText.gameObject.SetActive(false);
+
+        figure.gameObject.SetActive(false);
+
+        dialogbox.gameObject.SetActive(false);
+        // ShowDialogRow();//修改下派生的函数
     }
 
 }

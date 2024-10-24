@@ -4,21 +4,21 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Interactable
   - Ground
+  - Interactable
   - Enemy
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Player
+  - 
   - Water
   - UI
-  - Ground
-  - GroundDetector
-  - InteractableItem
-  - InteractableItemDetector
-  - Enemy
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
@@ -44,15 +44,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Back
-    uniqueID: 1801201295
-    locked: 0
-  - name: Middle
-    uniqueID: 2812676221
-    locked: 0
-  - name: Front
-    uniqueID: 404946701
-    locked: 0
-  - name: UI
-    uniqueID: 2206743045
+  - name: New Layer 1
+    uniqueID: 1084466417
     locked: 0
