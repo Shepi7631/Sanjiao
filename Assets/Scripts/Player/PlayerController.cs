@@ -2,14 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.Windows;
 public enum GameType { Normal, Dream, Dig }
+public enum AgeType { Children, Young, Older }
 
 public class PlayerController : MonoBehaviour
 {
     #region ÊýÖµ
-    private float moveSpeed = 6;
-    public float MoveSpeed { get => moveSpeed; private set => moveSpeed = value; }
+    private float moveSpeed = 8;
+    public float MoveSpeed
+    {
+        get
+        {
+            if (curAgeType == AgeType.Children) return moveSpeed * 0.75f;
+            else if (curAgeType == AgeType.Young) return moveSpeed;
+            else return moveSpeed * 0.5f;
+        }
+        private set => moveSpeed = value;
+    }
     private float jumpSpeed = 18f;
     public float JumpSpeed { get => jumpSpeed; private set => jumpSpeed = value; }
     private float dashCD = 2.5f;
@@ -21,9 +32,21 @@ public class PlayerController : MonoBehaviour
     public float QTEBarBadLen { get => qteBarBadLen; set => qteBarBadLen = value; }
     public float QTEBarGoodLen { get => qteBarGoodLen; set => qteBarGoodLen = value; }
     private float originGravityScale;
+    private float childrenScaleSize = 0.5f;
     #endregion
 
     #region ×´Ì¬
+    private AgeType curAgeType = AgeType.Children;
+    private Vector3 originScale = new Vector3(1, 1, 1);
+    public Vector3 CurScale
+    {
+        get
+        {
+            if (curAgeType == AgeType.Children) return childrenScaleSize * originScale;
+            else return originScale;
+        }
+    }
+
     private int curMineralCount;
     public int CurMineralCount { get => curMineralCount; set => curMineralCount = value; }
     public bool Jump => playerInput.Jump;
@@ -39,6 +62,7 @@ public class PlayerController : MonoBehaviour
     public bool right = true;
     public bool IsGround => groundDetector.IsGround;
     public bool Falling => !IsGround && rb.velocity.y < 0;
+    public bool Rising => rb.velocity.y > 0;
     private float curDashCD = 0;
     public float CurDashCD { get => curDashCD; private set => curDashCD = value; }
     public bool CanDash
@@ -62,6 +86,7 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private Canvas canvas;
     public QTEBar qteBar;
+    public List<TilemapCollider2D> specialColliderList = new List<TilemapCollider2D>();
     #endregion
 
 
@@ -90,12 +115,12 @@ public class PlayerController : MonoBehaviour
         rb.velocity = new Vector3(x, rb.velocity.y, 0);
         if (x < 0)
         {
-            transform.localScale = new Vector3(-1, 1, 1);
+            transform.localScale = new Vector3(-CurScale.x, CurScale.y, CurScale.z);
             right = false;
         }
         else if (x > 0)
         {
-            transform.localScale = new Vector3(1, 1, 1);
+            transform.localScale = CurScale;
             right = true;
         }
     }
@@ -150,7 +175,7 @@ public class PlayerController : MonoBehaviour
             case GameType.Dream:
                 if (!interactableItemDetector.interactable || !CanIteract) return;
                 InteractableItem item = interactableItemDetector.GetItem();
-                if (!item.canInteract) return;
+                if (item.curState != ItemStateType.Interact) return;
                 switch (item.itemName)
                 {
                     case ("Car"):
@@ -163,6 +188,11 @@ public class PlayerController : MonoBehaviour
                         PullRod pullRod = (PullRod)item;
                         pullRod.Interact();
                         break;
+                    case ("Clock"):
+                        Clock clock = (Clock)item;
+                        ChangeAge();
+                        clock.Interact();
+                        break;
                 }
                 break;
             case GameType.Dig:
@@ -171,4 +201,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void ChangeAge()
+    {
+        if (curAgeType == AgeType.Older) curAgeType = AgeType.Children;
+        else curAgeType++;
+
+    }
 }

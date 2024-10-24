@@ -34,7 +34,7 @@ public class PlayerState_Idle : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Idle");
+        animator.Play("Player_Idle");
         playerController.SetVelocityX(0);
     }
     public override void OnExit()
@@ -46,7 +46,6 @@ public class PlayerState_Idle : PlayerState
         base.OnUpdate();
 
         if (playerController.IsGround && playerController.Jump && playerController.CanJump) playerStateMachine.SwitchState(PlayerStateType.Jump);
-        else if (playerInput.Dash && playerController.CanDash) playerStateMachine.SwitchState(PlayerStateType.Dash);
         else if (playerController.Falling) playerStateMachine.SwitchState(PlayerStateType.Fall);
         else if (playerInput.IsMoving) playerStateMachine.SwitchState(PlayerStateType.Run);
         else if (playerInput.Fire) playerController.Interact();
@@ -66,7 +65,7 @@ public class PlayerState_Run : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Run");
+        animator.Play("Player_Run");
     }
     public override void OnExit()
     {
@@ -77,7 +76,6 @@ public class PlayerState_Run : PlayerState
         base.OnUpdate();
 
         if (playerController.IsGround && playerController.Jump && playerController.CanJump) playerStateMachine.SwitchState(PlayerStateType.Jump);
-        else if (playerInput.Dash && playerController.CanDash) playerStateMachine.SwitchState(PlayerStateType.Dash);
         else if (playerController.Falling) playerStateMachine.SwitchState(PlayerStateType.Fall);
         else if (!playerInput.IsMoving) playerStateMachine.SwitchState(PlayerStateType.Idle);
 
@@ -108,8 +106,8 @@ public class PlayerState_Jump : PlayerState
     public override void OnUpdate()
     {
         base.OnUpdate();
-        if (playerInput.Dash && playerController.CanDash) playerStateMachine.SwitchState(PlayerStateType.Dash);
-        else if (playerController.Falling) playerStateMachine.SwitchState(PlayerStateType.Fall);
+        if (playerController.Falling) playerStateMachine.SwitchState(PlayerStateType.Fall);
+        else if (!playerController.Rising && playerController.IsGround) playerStateMachine.SwitchState(PlayerStateType.Land);
     }
     public override void OnFixedUpdate()
     {
@@ -137,7 +135,6 @@ public class PlayerState_Fall : PlayerState
     {
         base.OnUpdate();
         if (playerController.Jump && playerController.CanJump) playerStateMachine.SwitchState(PlayerStateType.Jump);
-        else if (playerInput.Dash && playerController.CanDash) playerStateMachine.SwitchState(PlayerStateType.Dash);
         else if (playerController.IsGround) playerStateMachine.SwitchState(PlayerStateType.Land);
     }
     public override void OnFixedUpdate()
@@ -229,7 +226,7 @@ public class PlayerState_Driving : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Dash");
+        animator.Play("Player_Idle");
         timer = 0;
         playerInput.Disable();
         if (car.right) playerController.SetVelocityX(float.Epsilon);

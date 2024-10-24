@@ -10,21 +10,17 @@ public class Car : InteractableItem
     public float drivingDuration;
     public bool right;
 
+    private void Awake()
+    {
+        if (endPos.position.x >= startPos.position.x) right = true;
+        else right = false;
+    }
+
     public override void Interact()
     {
         transform.position = startPos.position;
-        canInteract = false;
+        curState = ItemStateType.Close;
         Sequence sequence = DOTween.Sequence()
-            .Append(transform.DOMove(endPos.position, drivingDuration))
-            .AppendCallback(() =>
-            {
-                canInteract = true;
-                Transform temp = startPos;
-                startPos = endPos;
-                endPos = temp;
-                right = !right;
-                if (right) transform.localScale = new Vector3(1, 1);
-                else transform.localScale = new Vector3(-1, 1);
-            });
+            .Append(transform.DOMove(endPos.position, drivingDuration));
     }
 }
