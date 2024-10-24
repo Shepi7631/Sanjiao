@@ -4,23 +4,25 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Cinemachine;
+using UnityEditor;
 
 public class NPC : MonoBehaviour
 {
    
-    public TextAsset dialogDataFile;  //对话文本文件，csv格式   
+    public List<TextAsset> dialogDataFile;  //对话文本文件，csv格式   
     public SpriteRenderer figure;//角色图像
+    public SpriteRenderer dialogbox;//对话框
     public TMP_Text nameText;//角色名字文本
     public TMP_Text dialogText; //对话内容文本
     public List<Sprite> sprites = new List<Sprite>();//角色图片列表
+    Dictionary<string, Sprite> imageDic = new Dictionary<string, Sprite>();//对应立绘名与角色图片的字典
     public Button nextbutton;//“继续”按钮
     public GameObject optionButton;//选项按钮
     public Transform buttonGroup;//选项按钮的排列方式
-    Dictionary<string,Sprite> imageDic=new Dictionary<string, Sprite>();//对应立绘名与立绘的字典
     public int dialogIndex;//保存当前对话索引值
     public List<dialogstate> state=new List<dialogstate>();//保存角色状态
+    public dialogstate currentCharacter;
     public string[] dialogRows;  //存储分割的对话文本
-    
         
     public void OnClickNext()
     {
@@ -29,14 +31,23 @@ public class NPC : MonoBehaviour
     private void Awake()
     {
         //存立绘
-        imageDic["Player_Idle_0"] = sprites[0];
-        imageDic["Player_Idle_2"] = sprites[1];
+        imageDic["主角"] = sprites[0];//主角立绘1
+        imageDic["NULL"] = sprites[1];//主角立绘2
+        imageDic["女儿"] = sprites[2];
+        imageDic["小孩1"] = sprites[3];
+        imageDic["小孩2"] = sprites[4];
+        imageDic["工友"] = sprites[5];
+        imageDic["妻子"] = sprites[6];
+        imageDic["药店老板"] = sprites[7];
+        imageDic["买药的人"] = sprites[8];
+        imageDic["警卫队"] = sprites[9];
 
         //将初始化的角色存入list中
         dialogstate mainrole = new dialogstate();
         dialogstate.flagid = "0";
         mainrole.effect = "0";
         mainrole.name = "主角";
+        mainrole.dialogTextIndex = 0;
         state.Add(mainrole);
 
     }//初始化人物信息
@@ -90,17 +101,19 @@ public class NPC : MonoBehaviour
             }
             else if (cells[0] == "END" && int.Parse(cells[1]) == dialogIndex)
             {
-                
+
 
                 /*测试用
                  UpdateText(cells[7], cells[3]);
                 UpdateImage(cells[2]);
                 dialogIndex = int.Parse(cells[4]);
                 */
-
-
-                //这里应该让ui组件消失的，但是不知道用什么控件
-
+                
+                nextbutton.gameObject.SetActive(false);
+                dialogText.gameObject.SetActive(false);
+                nameText.gameObject.SetActive(false);
+                figure.gameObject.SetActive(false);
+                dialogbox.gameObject.SetActive(false);
                 dialogstate.flagid = cells[5];//赋一个flagid值用于确定下次开始的位置
                 Debug.Log("flagid changed");
                 break;
@@ -151,7 +164,11 @@ public class NPC : MonoBehaviour
                   dialogIndex = int.Parse(cells[4]);
                                 */
 
-                //这里应该让ui组件消失的，但是不知道用什么控件
+                nextbutton.gameObject.SetActive(false);
+                dialogText.gameObject.SetActive(false);
+                nameText.gameObject.SetActive(false);
+                figure.gameObject.SetActive(false);
+                dialogbox.gameObject.SetActive(false);
 
                 dialogstate.flagid = cells[5];//赋一个flagid值用于确定下次开始的位置
                 Debug.Log("flagid changed");
@@ -204,9 +221,16 @@ public class NPC : MonoBehaviour
         }
       
     }//产生效果的事件
+
+    public void triggle()
+    {
+        Start();
+    }
     private void Start()
     {
-        ReadText(dialogDataFile);
+        
+        
+        ReadText(dialogDataFile[state[0].dialogTextIndex]);
         int j=0;
         
         //确定对话开始的起始位置
@@ -218,7 +242,11 @@ public class NPC : MonoBehaviour
                 
             }
         }
-               
+        nextbutton.gameObject.SetActive(true);
+        dialogText.gameObject.SetActive(true);
+        nameText.gameObject.SetActive(true);
+        figure.gameObject.SetActive(true);
+        dialogbox.gameObject.SetActive(true);
         ShowDialogRow(j);
         
     }
