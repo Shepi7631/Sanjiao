@@ -11,6 +11,8 @@ public class GameManager : SingletonBase<GameManager>
 {
     [SerializeField] private PlayerController playerController;
     [SerializeField] private Image fadePanel;
+    [SerializeField] private Image infoPanel;
+    private float miningGameTimer = 0;
     public List<Vector3> playerBirthPos;
 
 
@@ -52,7 +54,15 @@ public class GameManager : SingletonBase<GameManager>
                 if (curCount >= maxCount) Remake();
             }
         }
-
+        else if (curLevel == 1)
+        {
+            miningGameTimer += Time.deltaTime;
+            if (miningGameTimer >= 60f)
+            {
+                miningGameTimer = 0;
+                NextLevel();
+            }
+        }
         UIManager.Instance.timerText.text = "衰老倒计时：" + ageTimer.ToString("f2") + "/" + maxTimer.ToString();
         UIManager.Instance.countText.text = "衰老次数：" + curCount.ToString() + "/" + maxCount.ToString();
     }
@@ -86,11 +96,13 @@ public class GameManager : SingletonBase<GameManager>
             case 0:
                 playerController.gameType = GameType.Dream;
                 playerController.ChangeAge(AgeType.Children);
+                infoPanel.enabled = false;
                 break;
             case 1:
                 playerController.gameType = GameType.Dig;
                 playerController.ChangeAge(AgeType.Young);
                 MiningGameManager.Instance.InitGame(-75, 75, 8, 16);
+                infoPanel.enabled = true;
                 break;
             case 2:
                 playerController.gameType = GameType.Dream;
@@ -99,6 +111,7 @@ public class GameManager : SingletonBase<GameManager>
                 maxTimer = 15;
                 curCount = 0;
                 maxCount = 5;
+                infoPanel.enabled = false;
                 break;
         }
         playerController.Gold = 0;

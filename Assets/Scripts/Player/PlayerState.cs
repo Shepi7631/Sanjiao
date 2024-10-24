@@ -59,7 +59,7 @@ public class PlayerState_Idle : PlayerState
 public class PlayerState_Run : PlayerState
 {
     private float timer = 0;
-    private float effectGap = 0.667f;
+    private float effectGap = 0.333f;
     public PlayerState_Run(PlayerStateMachine stateMachine, PlayerController playerController, Animator animator, PlayerInput playerInput) : base(stateMachine, playerController, animator, playerInput)
     {
     }
@@ -69,7 +69,7 @@ public class PlayerState_Run : PlayerState
         base.OnEnter();
         animator.Play($"Player_{playerController.curAgeType.ToString()}_Run");
         AudioManager.Instance.PlayEffect(AudioType.Run);
-        effectGap = 0.667f;
+        effectGap = 0.333f;
         if (playerController.curAgeType == AgeType.Older) effectGap *= 2;
     }
     public override void OnExit()
@@ -297,7 +297,7 @@ public class PlayerState_Dig : PlayerState
     {
         base.OnUpdate();
         timer += Time.deltaTime;
-        if (timer >= 0.25f)
+        if (timer >= 0.42f)
         {
             if (MiningGameManager.Instance.DigFeedBack(playerController.transform.position.x)) playerStateMachine.SwitchState(PlayerStateType.QTE);
             else playerStateMachine.SwitchState(PlayerStateType.Idle);
@@ -334,6 +334,7 @@ public class PlayerState_QTE : PlayerState
         if (playerInput.Fire)
         {
             playerController.qteBar.ClickOnce();
+            animator.Play("Dig");
         }
     }
     public override void OnFixedUpdate()

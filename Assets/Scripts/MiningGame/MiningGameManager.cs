@@ -47,7 +47,7 @@ public class MiningGameManager : SingletonBase<MiningGameManager>
         if (distance > farDistance) text = "ÓÒ±ßÔ¶¾àÀë";
         else if (distance <= farDistance && distance > middleDistance) text = "ÓÒ±ßÖĞ¾àÀë";
         else if (distance <= middleDistance && distance > closeDistance) text = "ÓÒ±ß½ü¾àÀë";
-        else if (distance <= closeDistance && distance > -closeDistance) return true; 
+        else if (distance <= closeDistance && distance > -closeDistance) { mineralPosList.Remove(GetClosestMineralPos(digPos)); return true; }
         else if (distance <= -closeDistance && distance > -middleDistance) text = "×ó±ß½ü¾àÀë";
         else if (distance <= -middleDistance && distance > -farDistance) text = "×ó±ßÖĞ¾àÀë";
         else if (distance <= -farDistance) text = "×ó±ßÔ¶¾àÀë";
