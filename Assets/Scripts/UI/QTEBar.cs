@@ -28,7 +28,7 @@ public class QTEBar : MonoBehaviour
 
     [SerializeField] private RectTransform pointerTransform;
 
-    [SerializeField] private TextMeshProUGUI pointerInfo;
+    //[SerializeField] private TextMeshProUGUI pointerInfo;
 
     [SerializeField] private InfoPanel infoPanel;
 
@@ -84,7 +84,7 @@ public class QTEBar : MonoBehaviour
     private void Update()
     {
         pointerTransform.anchoredPosition = new Vector2(length * (curValue - 0.5f), pointerTransform.anchoredPosition.y);
-        pointerInfo.text = curValue.ToString("F2");
+        //pointerInfo.text = curValue.ToString("F2");
     }
 
     private void InitQTEBar()

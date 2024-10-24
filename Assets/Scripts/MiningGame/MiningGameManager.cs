@@ -4,18 +4,14 @@ using UnityEngine;
 
 public class MiningGameManager : SingletonBase<MiningGameManager>
 {
-
+    [SerializeField] private InfoPanel infoPanel;
+    [SerializeField] private Transform miningGamePos;
     private float closeDistance = 0.5f;
     private float middleDistance = 2f;
     private float farDistance = 5f;
 
     [SerializeField] private GameObject prefab;
     private List<float> mineralPosList = new List<float>();
-
-    private void Awake()
-    {
-        InitGame(-50, 50, 8, 16);
-    }
 
     private void OnEnable()
     {
@@ -35,12 +31,12 @@ public class MiningGameManager : SingletonBase<MiningGameManager>
         while (curValue + gap < max)
         {
             curValue += gap;
-            mineralPosList.Add(curValue);
+            mineralPosList.Add(curValue + miningGamePos.position.x);
             gap = Random.Range(minDiff, maxDiff);
         }
         foreach (var mineralPos in mineralPosList)
         {
-            Instantiate(prefab, new Vector2(mineralPos, 0), Quaternion.identity);
+            Instantiate(prefab, new Vector2(mineralPos, miningGamePos.position.y), Quaternion.identity);
         }
     }
 
@@ -48,14 +44,14 @@ public class MiningGameManager : SingletonBase<MiningGameManager>
     {
         float distance = GetClosestMineralPos(digPos) - digPos;
         string text = "Error";
-        if (distance > farDistance) text = "FarRight";
-        else if (distance <= farDistance && distance > middleDistance) text = "MiddleRight";
-        else if (distance <= middleDistance && distance > closeDistance) text = "CloseRight";
-        else if (distance <= closeDistance && distance > -closeDistance) { text = "Here"; return true; }
-        else if (distance <= -closeDistance && distance > -middleDistance) text = "CloseLeft";
-        else if (distance <= -middleDistance && distance > -farDistance) text = "MiddleLeft";
-        else if (distance <= -farDistance) text = "FarLeft";
-        UIManager.Instance.ChangeMiningGameInfo(text);
+        if (distance > farDistance) text = "”“±ﬂ‘∂æ‡¿Î";
+        else if (distance <= farDistance && distance > middleDistance) text = "”“±ﬂ÷–æ‡¿Î";
+        else if (distance <= middleDistance && distance > closeDistance) text = "”“±ﬂΩ¸æ‡¿Î";
+        else if (distance <= closeDistance && distance > -closeDistance) return true; 
+        else if (distance <= -closeDistance && distance > -middleDistance) text = "◊Û±ﬂΩ¸æ‡¿Î";
+        else if (distance <= -middleDistance && distance > -farDistance) text = "◊Û±ﬂ÷–æ‡¿Î";
+        else if (distance <= -farDistance) text = "◊Û±ﬂ‘∂æ‡¿Î";
+        infoPanel.ShowInfo(text, 1);
         return false;
     }
 

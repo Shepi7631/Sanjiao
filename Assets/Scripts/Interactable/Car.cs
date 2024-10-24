@@ -5,22 +5,23 @@ using UnityEngine;
 
 public class Car : InteractableItem
 {
-    public Transform startPos;
-    public Transform endPos;
+    public List<Transform> targets = new List<Transform>();
     public float drivingDuration;
     public bool right;
 
     private void Awake()
     {
-        if (endPos.position.x >= startPos.position.x) right = true;
+        if (targets[0].position.x >= targets[targets.Count - 1].position.x) right = true;
         else right = false;
     }
 
     public override void Interact()
     {
-        transform.position = startPos.position;
         curState = ItemStateType.Close;
-        Sequence sequence = DOTween.Sequence()
-            .Append(transform.DOMove(endPos.position, drivingDuration));
+        Sequence sequence = DOTween.Sequence();
+        foreach (var target in targets)
+        {
+            sequence.Append(transform.DOMove(target.position, 1));
+        }
     }
 }

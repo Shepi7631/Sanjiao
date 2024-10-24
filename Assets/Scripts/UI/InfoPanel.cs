@@ -7,15 +7,19 @@ using UnityEngine.UI;
 public class InfoPanel : MonoBehaviour
 {
     private Text infoText;
+    private Image image;
 
     private void Awake()
     {
         infoText = GetComponentInChildren<Text>();
+        image = GetComponent<Image>();
     }
     public void ShowInfo(string text, float duration)
     {
         DOTween.Sequence()
+            .AppendCallback(() => { image.color = new Color(255, 255, 255, 120); })
             .Append(infoText.DOText(text, duration / 2))
-            .Append(infoText.DOText("", duration / 2));
+            .Append(infoText.DOText("", duration / 2))
+            .AppendCallback(() => { image.color = new Color(255, 255, 255, 0); });
     }
 }

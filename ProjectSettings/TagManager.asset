@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Ground
   - Interactable
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - GroundDetector
   - InteractableItem
   - InteractableItemDetector
-  - 
+  - Enemy
   - 
   - 
   - 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.Windows;
+using Cinemachine;
 public enum GameType { Normal, Dream, Dig }
 public enum AgeType { Children, Young, Older }
 
@@ -21,8 +22,18 @@ public class PlayerController : MonoBehaviour
         }
         private set => moveSpeed = value;
     }
-    private float jumpSpeed = 18f;
-    public float JumpSpeed { get => jumpSpeed; private set => jumpSpeed = value; }
+    private float jumpSpeed = 20f;
+    public float JumpSpeed
+    {
+        get
+        {
+            if (curAgeType == AgeType.Children) return jumpSpeed * 0.75f;
+            else if (curAgeType == AgeType.Young) return jumpSpeed;
+            else return 0;
+        }
+        private set => jumpSpeed = value;
+    }
+
     private float dashCD = 2.5f;
     private float jumpBufferTime = 0.25f;
     private float landTime = 0.125f;
@@ -32,26 +43,33 @@ public class PlayerController : MonoBehaviour
     public float QTEBarBadLen { get => qteBarBadLen; set => qteBarBadLen = value; }
     public float QTEBarGoodLen { get => qteBarGoodLen; set => qteBarGoodLen = value; }
     private float originGravityScale;
-    private float childrenScaleSize = 0.5f;
+
     #endregion
 
     #region ״̬
-    private AgeType curAgeType = AgeType.Children;
+    public AgeType curAgeType = AgeType.Children;
     private Vector3 originScale = new Vector3(1, 1, 1);
     public Vector3 CurScale
     {
         get
         {
-            if (curAgeType == AgeType.Children) return childrenScaleSize * originScale;
-            else return originScale;
+            if (curAgeType == AgeType.Children) return 0.4f * originScale;
+            else if (curAgeType == AgeType.Young) return 0.8f * originScale;
+            else return 0.6f * originScale;
         }
     }
 
-    private int curMineralCount;
-    public int CurMineralCount { get => curMineralCount; set => curMineralCount = value; }
     public bool Jump => playerInput.Jump;
     private bool canJump = false;
-    public bool CanJump { get => canJump; private set => canJump = value; }
+    public bool CanJump
+    {
+        get
+        {
+            if (curAgeType == AgeType.Older) return false;
+            else return canJump;
+        }
+        private set => canJump = value;
+    }
 
     private float jumpBuffer = 0;
     public float JumpBuffer { get => jumpBuffer; private set => jumpBuffer = value; }
@@ -71,8 +89,10 @@ public class PlayerController : MonoBehaviour
     }
     private bool canIteract = true;
     public bool CanIteract { get => canIteract; set => canIteract = value; }
+    public int Gold { get => gold; set => gold = value; }
 
-    [SerializeField] private GameType gameType;
+    public GameType gameType;
+    private int gold = 0;
     //public PlayerStateType curPlayerState;
     //public PlayerStateType prePlayerState;
     #endregion
@@ -86,7 +106,7 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
     private Canvas canvas;
     public QTEBar qteBar;
-    public List<TilemapCollider2D> specialColliderList = new List<TilemapCollider2D>();
+    public List<GameObject> specialList = new List<GameObject>();
     #endregion
 
 
@@ -179,6 +199,7 @@ public class PlayerController : MonoBehaviour
                 switch (item.itemName)
                 {
                     case ("Car"):
+                        if (curAgeType != AgeType.Older) break;
                         Car car = (Car)item;
                         stateMachine.SetDrivingParameter(car);
                         stateMachine.SwitchState(PlayerStateType.Driving);
@@ -190,8 +211,18 @@ public class PlayerController : MonoBehaviour
                         break;
                     case ("Clock"):
                         Clock clock = (Clock)item;
-                        ChangeAge();
+                        AgeBackward();
                         clock.Interact();
+                        break;
+                    case ("FinishLine"):
+                        FinishLine finishLine = (FinishLine)item;
+                        if (Gold >= finishLine.goldLimit)
+                            finishLine.Interact();
+                        break;
+                    case ("Gold"):
+                        Gold gold = (Gold)item;
+                        Gold++;
+                        gold.Interact();
                         break;
                 }
                 break;
@@ -201,10 +232,41 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void ChangeAge()
+    public void AgeForward()
     {
-        if (curAgeType == AgeType.Older) curAgeType = AgeType.Children;
+        if (curAgeType == AgeType.Older) GameManager.Instance.Remake();
         else curAgeType++;
 
+        transform.localScale = CurScale;
+
     }
+
+    public void AgeBackward()
+    {
+        if (curAgeType == AgeType.Children) curAgeType = AgeType.Children;
+        else curAgeType--;
+
+        transform.localScale = CurScale;
+
+    }
+
+    public void ChangeAge(AgeType ageType)
+    {
+        curAgeType = ageType;
+        transform.localScale = CurScale;
+        if (curAgeType == AgeType.Older)
+        {
+
+        }
+        else if (curAgeType == AgeType.Young)
+        {
+
+        }
+        else
+        {
+
+        }
+        transform.localScale = CurScale;
+    }
+
 }

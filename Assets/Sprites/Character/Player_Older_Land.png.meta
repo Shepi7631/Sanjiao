@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 8c86624d7560cfa47bf8c361c6816c5a
+guid: f6367c6d32a5f1d478904f446ed6492a
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -103,7 +103,70 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Player_Older_Land_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2
+        width: 386
+        height: 526
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90cb986daa9fbb045b5744cf699fa582
+      internalID: -2137502920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Player_Older_Land_1
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 1
+        width: 386
+        height: 526
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 661510ae6b48f414b99591cf801af0a0
+      internalID: -1842483121
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Player_Older_Land_2
+      rect:
+        serializedVersion: 2
+        x: 843
+        y: 0
+        width: 386
+        height: 526
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 83134cc1b2cbc924fa6932477b52a457
+      internalID: -515357009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -114,7 +177,10 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Player_Older_Land_1: -1842483121
+      Player_Older_Land_0: -2137502920
+      Player_Older_Land_2: -515357009
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

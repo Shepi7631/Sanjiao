@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public enum AudioType { Dig, Win, Lose }
+public enum AudioType { Dig, Win, Lose, Open, Land, Jump, Run, Car }
 
 [Serializable]
 public struct AudioPair

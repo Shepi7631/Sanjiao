@@ -13,4 +13,7 @@ public class EventManager : SingletonBase<EventManager>
 
     public static event Action<bool> OnMiningGameEndEvent;
     public static void MiningGameEndEvent(bool state) { OnMiningGameEndEvent?.Invoke(state); }
+
+    public static event Action OnGameRestartEvent;
+    public static void GameRestartEvent() { OnGameRestartEvent?.Invoke(); }
 }

@@ -7,6 +7,6 @@ public class Clock : InteractableItem
 
     public override void Interact()
     {
-        curState = ItemStateType.Used;
+        gameObject.SetActive(false);
     }
 }

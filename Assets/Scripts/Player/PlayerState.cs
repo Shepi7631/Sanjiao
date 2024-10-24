@@ -34,7 +34,7 @@ public class PlayerState_Idle : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Player_Idle");
+        animator.Play($"Player_{playerController.curAgeType.ToString()}_Idle");
         playerController.SetVelocityX(0);
     }
     public override void OnExit()
@@ -58,6 +58,7 @@ public class PlayerState_Idle : PlayerState
 
 public class PlayerState_Run : PlayerState
 {
+    private float timer = 0;
     public PlayerState_Run(PlayerStateMachine stateMachine, PlayerController playerController, Animator animator, PlayerInput playerInput) : base(stateMachine, playerController, animator, playerInput)
     {
     }
@@ -65,7 +66,7 @@ public class PlayerState_Run : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Player_Run");
+        animator.Play($"Player_{playerController.curAgeType.ToString()}_Run");
     }
     public override void OnExit()
     {
@@ -74,10 +75,16 @@ public class PlayerState_Run : PlayerState
     public override void OnUpdate()
     {
         base.OnUpdate();
-
+        timer += Time.deltaTime;
+        if (timer > 0.5f)
+        {
+            AudioManager.Instance.PlayEffect(AudioType.Run);
+            timer = 0;
+        }
         if (playerController.IsGround && playerController.Jump && playerController.CanJump) playerStateMachine.SwitchState(PlayerStateType.Jump);
         else if (playerController.Falling) playerStateMachine.SwitchState(PlayerStateType.Fall);
         else if (!playerInput.IsMoving) playerStateMachine.SwitchState(PlayerStateType.Idle);
+        else if (playerInput.Fire) playerController.Interact();
 
     }
     public override void OnFixedUpdate()
@@ -95,9 +102,10 @@ public class PlayerState_Jump : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Jump");
+        animator.Play($"Player_{playerController.curAgeType.ToString()}_Jump");
         playerController.JumpOver();
         playerController.SetVelocityY(playerController.JumpSpeed);
+        AudioManager.Instance.PlayEffect(AudioType.Jump);
     }
     public override void OnExit()
     {
@@ -125,7 +133,7 @@ public class PlayerState_Fall : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Fall");
+        animator.Play($"Player_{playerController.curAgeType.ToString()}_Fall");
     }
     public override void OnExit()
     {
@@ -153,10 +161,11 @@ public class PlayerState_Land : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Land");
+        animator.Play($"Player_{playerController.curAgeType.ToString()}_Land");
         timer = 0;
         playerController.SetVelocityX(0);
         playerController.ResetJump();
+        AudioManager.Instance.PlayEffect(AudioType.Land);
     }
     public override void OnExit()
     {
@@ -226,7 +235,7 @@ public class PlayerState_Driving : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Player_Idle");
+        animator.Play($"Player_{playerController.curAgeType.ToString()}_Idle");
         timer = 0;
         playerInput.Disable();
         if (car.right) playerController.SetVelocityX(float.Epsilon);
@@ -235,6 +244,7 @@ public class PlayerState_Driving : PlayerState
         playerController.DisableGravity();
         playerController.SetVelocityX(0);
         playerController.SetVelocityY(0);
+        AudioManager.Instance.PlayEffect(AudioType.Car);
     }
     public override void OnExit()
     {
@@ -305,7 +315,7 @@ public class PlayerState_QTE : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Player_Idle");
+        animator.Play($"Player_{playerController.curAgeType.ToString()}_Idle");
         EventManager.OnMiningGameEndEvent += Exit;
         EventManager.MiningGameStartEvent(playerController.QTEBarBadLen, playerController.QTEBarGoodLen);
     }
@@ -332,7 +342,7 @@ public class PlayerState_QTE : PlayerState
         playerStateMachine.SwitchState(PlayerStateType.Idle);
         if (state)
         {
-            playerController.CurMineralCount++;
+            playerController.Gold++;
             AudioManager.Instance.PlayEffect(AudioType.Win);
         }
         else
@@ -340,5 +350,6 @@ public class PlayerState_QTE : PlayerState
             AudioManager.Instance.PlayEffect(AudioType.Lose);
         }
 
+        if (playerController.Gold >= 5) GameManager.Instance.NextLevel();
     }
 }
