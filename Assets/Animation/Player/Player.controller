@@ -347,7 +347,7 @@ AnimatorStateMachine:
     m_Position: {x: 440, y: 460, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -6613697674909845068}
-    m_Position: {x: 475, y: 525, z: 0}
+    m_Position: {x: 480, y: 520, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -574424968011551273}
     m_Position: {x: 510, y: 590, z: 0}
@@ -453,7 +453,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Dig
-  m_Speed: 1
+  m_Speed: 2
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -531,7 +531,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Player_Older_Run
-  m_Speed: 1
+  m_Speed: 0.5
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []

@@ -1,33 +1,60 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using DG.Tweening;
 
 public class GameManager : SingletonBase<GameManager>
 {
     [SerializeField] private PlayerController playerController;
+    [SerializeField] private Image fadePanel;
     public List<Vector3> playerBirthPos;
 
-    private float ageTimer;
+
+    public float ageTimer;
+
+    private float maxTimer;
+
+    private int curCount;
+
+    private int maxCount;
+
 
     private int curLevel = 0;
 
     private void Awake()
     {
         curLevel = PlayerPrefs.GetInt("Level");
+        DOTween.Sequence()
+            .Append(fadePanel.DOColor(new Color(0, 0, 0, 1), 0.5f))
+            .Append(fadePanel.DOColor(new Color(0, 0, 0, 0), 0.5f));
     }
 
     private void Start()
     {
         playerController.SetPos(playerBirthPos[curLevel]);
         ChangeLevel();
-
     }
 
     private void Update()
     {
-        
+        if (curLevel == 2)
+        {
+            ageTimer += Time.deltaTime;
+            if (ageTimer >= maxTimer)
+            {
+                playerController.AgeForward();
+                ageTimer = 0;
+                curCount++;
+                if (curCount >= maxCount) Remake();
+            }
+        }
+
+        UIManager.Instance.timerText.text = "衰老倒计时：" + ageTimer.ToString("f2") + "/" + maxTimer.ToString();
+        UIManager.Instance.countText.text = "衰老次数：" + curCount.ToString() + "/" + maxCount.ToString();
     }
 
     public void NextLevel()
@@ -67,9 +94,14 @@ public class GameManager : SingletonBase<GameManager>
                 break;
             case 2:
                 playerController.gameType = GameType.Dream;
-                playerController.ChangeAge(AgeType.Children);
+                playerController.ChangeAge(AgeType.Young);
+                ageTimer = 0;
+                maxTimer = 15;
+                curCount = 0;
+                maxCount = 5;
                 break;
         }
         playerController.Gold = 0;
     }
 }
+

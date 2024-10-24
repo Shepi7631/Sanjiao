@@ -17,9 +17,7 @@ public class InfoPanel : MonoBehaviour
     public void ShowInfo(string text, float duration)
     {
         DOTween.Sequence()
-            .AppendCallback(() => { image.color = new Color(255, 255, 255, 120); })
             .Append(infoText.DOText(text, duration / 2))
-            .Append(infoText.DOText("", duration / 2))
-            .AppendCallback(() => { image.color = new Color(255, 255, 255, 0); });
+            .Append(infoText.DOText("", duration / 2));
     }
 }

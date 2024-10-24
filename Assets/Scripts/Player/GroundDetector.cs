@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GroundDetector : MonoBehaviour
 {
-    private Collider2D collider2D;  
+    private new Collider2D collider2D;  
 
     private void Awake()
     {

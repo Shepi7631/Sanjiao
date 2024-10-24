@@ -34,10 +34,10 @@ public class MiningGameManager : SingletonBase<MiningGameManager>
             mineralPosList.Add(curValue + miningGamePos.position.x);
             gap = Random.Range(minDiff, maxDiff);
         }
-        foreach (var mineralPos in mineralPosList)
-        {
-            Instantiate(prefab, new Vector2(mineralPos, miningGamePos.position.y), Quaternion.identity);
-        }
+        //foreach (var mineralPos in mineralPosList)
+        //{
+        //    Instantiate(prefab, new Vector2(mineralPos, miningGamePos.position.y), Quaternion.identity);
+        //}
     }
 
     public bool DigFeedBack(float digPos)

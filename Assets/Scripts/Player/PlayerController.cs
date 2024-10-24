@@ -238,7 +238,7 @@ public class PlayerController : MonoBehaviour
         else curAgeType++;
 
         transform.localScale = CurScale;
-
+        stateMachine.SwitchState(PlayerStateType.Idle);
     }
 
     public void AgeBackward()
@@ -247,26 +247,15 @@ public class PlayerController : MonoBehaviour
         else curAgeType--;
 
         transform.localScale = CurScale;
-
+        stateMachine.SwitchState(PlayerStateType.Idle);
     }
 
     public void ChangeAge(AgeType ageType)
     {
         curAgeType = ageType;
+
         transform.localScale = CurScale;
-        if (curAgeType == AgeType.Older)
-        {
-
-        }
-        else if (curAgeType == AgeType.Young)
-        {
-
-        }
-        else
-        {
-
-        }
-        transform.localScale = CurScale;
+        stateMachine.SwitchState(PlayerStateType.Idle);
     }
 
 }

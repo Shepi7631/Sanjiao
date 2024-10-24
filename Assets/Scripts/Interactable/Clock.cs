@@ -7,6 +7,7 @@ public class Clock : InteractableItem
 
     public override void Interact()
     {
+        GameManager.Instance.ageTimer = 0;
         gameObject.SetActive(false);
     }
 }
