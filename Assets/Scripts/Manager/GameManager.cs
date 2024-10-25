@@ -6,6 +6,31 @@ using UnityEngine.UI;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using System;
+
+[Serializable]
+public enum GameFlow
+{
+    梦境0 = 0,
+    挖矿游戏 = 1,
+    梦境1 = 2,
+    早餐店 = 3,
+    家中 = 4,
+    矿洞门口 = 5,
+    药店和娱乐场 = 6,
+    篮球场 = 7,
+    垃圾回收厂 = 8,
+    梦境2 = 9,
+    矿洞 = 10
+}
+
+[Serializable]
+public struct GameFlowPair
+{
+    public GameFlow flow;
+    public Vector3 pos;
+}
+
 
 public class GameManager : SingletonBase<GameManager>
 {
@@ -13,8 +38,8 @@ public class GameManager : SingletonBase<GameManager>
     [SerializeField] private Image fadePanel;
     [SerializeField] private Image infoPanel;
     private float miningGameTimer = 0;
-    public List<Vector3> playerBirthPos;
-
+    public List<GameFlowPair> gameFlowPairs;
+    public Dictionary<GameFlow, Vector3> playerBirthPoses = new();
 
     public float ageTimer;
 
@@ -26,26 +51,26 @@ public class GameManager : SingletonBase<GameManager>
 
     public int GoldLimit;
 
-
-    private int curLevel = 0;
+    private GameFlow curFlow;
 
     private void Awake()
     {
-        curLevel = PlayerPrefs.GetInt("Level");
-        DOTween.Sequence()
-            .Append(fadePanel.DOColor(new Color(0, 0, 0, 1), 0.5f))
-            .Append(fadePanel.DOColor(new Color(0, 0, 0, 0), 0.5f));
+        foreach (GameFlowPair pair in gameFlowPairs)
+        {
+            playerBirthPoses.Add(pair.flow, pair.pos);
+        }
+
+        curFlow = (GameFlow)PlayerPrefs.GetInt("Level");
     }
 
     private void Start()
     {
-        playerController.SetPos(playerBirthPos[curLevel]);
         ChangeLevel();
     }
 
     private void Update()
     {
-        if (curLevel == 3)
+        if (playerController.gameType == GameType.Dream && curFlow != GameFlow.梦境0)
         {
             ageTimer += Time.deltaTime;
             if (ageTimer >= maxTimer)
@@ -55,116 +80,169 @@ public class GameManager : SingletonBase<GameManager>
                 curCount++;
                 if (curCount >= maxCount) Remake();
             }
+            UIManager.Instance.timerText.text = "衰老倒计时：" + ageTimer.ToString("f2") + "/" + maxTimer;
+            UIManager.Instance.countText.text = "衰老次数：" + curCount.ToString() + "/" + maxCount;
+            UIManager.Instance.goldText.text = "收集品数量" + playerController.Gold + "/" + GoldLimit;
         }
-        else if (curLevel == 4)
-        {
-            ageTimer += Time.deltaTime;
-            if (ageTimer >= maxTimer)
-            {
-                playerController.AgeForward();
-                ageTimer = 0;
-                curCount++;
-                if (curCount >= maxCount) Remake();
-            }
-        }
-
-        else if (curLevel == 1)
+        else if (playerController.gameType == GameType.Dig)
         {
             miningGameTimer += Time.deltaTime;
             if (miningGameTimer >= 60f)
             {
                 miningGameTimer = 0;
-                NextLevel();
+                NextLevel(GameFlow.家中);
             }
-        }
-
-        if (playerController.gameType == GameType.Dream)
-        {
-            UIManager.Instance.timerText.text = "衰老倒计时：" + ageTimer.ToString("f2") + "/" + maxTimer;
-            UIManager.Instance.countText.text = "衰老次数：" + curCount.ToString() + "/" + maxCount;
-            UIManager.Instance.goldText.text = "收集品数量" + playerController.Gold + "/" + GoldLimit;
         }
     }
 
-    public void NextLevel()
+    public void NextLevel(GameFlow flow)
     {
-        playerController.SetPos(playerBirthPos[++curLevel]);
+        curFlow = flow;
         ChangeLevel();
-
-        PlayerPrefs.SetInt("Level", curLevel);
+        PlayerPrefs.SetInt("Level", (int)curFlow);
         PlayerPrefs.Save();
     }
 
+    public void NextLevel(int flow)
+    {
+        curFlow = (GameFlow)flow;
+        ChangeLevel();
+
+        PlayerPrefs.SetInt("Level", (int)curFlow);
+        PlayerPrefs.Save();
+    }
+
+    [ContextMenu("DoSomething")]
     public void Remake()
     {
         SceneManager.LoadScene(0);
+
+        ChangeLevel();
     }
 
-    public void SetCurLevel(int level)
+    public void SetCurLevel(GameFlow flow)
     {
-        curLevel = level;
-        PlayerPrefs.SetInt("Level", curLevel);
+        curFlow = flow;
+        PlayerPrefs.SetInt("Level", (int)curFlow);
         PlayerPrefs.Save();
         Remake();
     }
 
     private void ChangeLevel()
     {
-        switch (curLevel)
+        DOTween.Sequence()
+        .Append(fadePanel.DOColor(new Color(0, 0, 0, 1), 0f))
+        .AppendCallback(() =>
         {
-            case 0:
-                playerController.gameType = GameType.Dream;
-                playerController.ChangeAge(AgeType.Children);
-                ageTimer = 0;
-                maxTimer = 0;
-                curCount = 0;
-                maxCount = 0;
-                GoldLimit = 0;
-                infoPanel.enabled = false;
-                break;
-            case 1:
-                playerController.gameType = GameType.Dig;
-                playerController.ChangeAge(AgeType.Young);
-                MiningGameManager.Instance.InitGame(-75, 75, 8, 16);
-                ageTimer = 0;
-                maxTimer = 0;
-                curCount = 0;
-                maxCount = 0;
-                GoldLimit = 0;
-                infoPanel.enabled = true;
-                break;
-            case 2:
-                playerController.gameType = GameType.Normal;
-                playerController.ChangeAge(AgeType.Young);
-                ageTimer = 0;
-                maxTimer = 0;
-                curCount = 0;
-                maxCount = 0;
-                GoldLimit = 0;
-                infoPanel.enabled = false;
-                break;
-            case 3:
-                playerController.gameType = GameType.Dream;
-                playerController.ChangeAge(AgeType.Young);
-                ageTimer = 0;
-                maxTimer = 12;
-                curCount = 0;
-                maxCount = 5;
-                GoldLimit = 3;
-                infoPanel.enabled = false;
-                break;
-            case 4:
-                playerController.gameType = GameType.Dream;
-                playerController.ChangeAge(AgeType.Young);
-                ageTimer = 0;
-                maxTimer = 12;
-                curCount = 0;
-                maxCount = 6;
-                GoldLimit = 8;
-                infoPanel.enabled = false;
-                break;
-        }
-        playerController.Gold = 0;
+            playerController.SetPos(playerBirthPoses[curFlow]);
+            playerController.playerInput.Disable();
+            switch (curFlow)
+            {
+                case GameFlow.梦境0:
+                    playerController.gameType = GameType.Dream;
+                    playerController.ChangeAge(AgeType.Children);
+                    UIManager.Instance.timerText.enabled = true;
+                    UIManager.Instance.countText.enabled = true;
+                    UIManager.Instance.goldText.enabled = true;
+                    infoPanel.enabled = false;
+                    break;
+                case GameFlow.挖矿游戏:
+                    playerController.gameType = GameType.Dig;
+                    playerController.ChangeAge(AgeType.Young);
+                    MiningGameManager.Instance.InitGame(-75, 75, 8, 16);
+                    UIManager.Instance.timerText.enabled = false;
+                    UIManager.Instance.countText.enabled = false;
+                    UIManager.Instance.goldText.enabled = false;
+                    infoPanel.enabled = true;
+                    break;
+                case GameFlow.梦境1:
+                    playerController.gameType = GameType.Dream;
+                    playerController.ChangeAge(AgeType.Young);
+                    UIManager.Instance.timerText.enabled = true;
+                    UIManager.Instance.countText.enabled = true;
+                    UIManager.Instance.goldText.enabled = true;
+                    ageTimer = 0;
+                    maxTimer = 12;
+                    curCount = 0;
+                    maxCount = 5;
+                    GoldLimit = 3;
+                    infoPanel.enabled = false;
+                    break;
+                case GameFlow.早餐店:
+                    playerController.gameType = GameType.Normal;
+                    playerController.ChangeAge(AgeType.Young);
+                    UIManager.Instance.timerText.enabled = false;
+                    UIManager.Instance.countText.enabled = false;
+                    UIManager.Instance.goldText.enabled = false;
+                    infoPanel.enabled = false;
+                    break;
+                case GameFlow.家中:
+                    playerController.gameType = GameType.Normal;
+                    playerController.ChangeAge(AgeType.Young);
+                    UIManager.Instance.timerText.enabled = false;
+                    UIManager.Instance.countText.enabled = false;
+                    UIManager.Instance.goldText.enabled = false;
+                    infoPanel.enabled = false;
+                    break;
+                case GameFlow.矿洞门口:
+                    playerController.gameType = GameType.Normal;
+                    playerController.ChangeAge(AgeType.Young);
+                    UIManager.Instance.timerText.enabled = false;
+                    UIManager.Instance.countText.enabled = false;
+                    UIManager.Instance.goldText.enabled = false;
+                    infoPanel.enabled = false;
+                    break;
+                case GameFlow.药店和娱乐场:
+                    playerController.gameType = GameType.Normal;
+                    playerController.ChangeAge(AgeType.Young);
+                    UIManager.Instance.timerText.enabled = false;
+                    UIManager.Instance.countText.enabled = false;
+                    UIManager.Instance.goldText.enabled = false;
+                    infoPanel.enabled = false;
+                    break;
+                case GameFlow.篮球场:
+                    playerController.gameType = GameType.Normal;
+                    playerController.ChangeAge(AgeType.Young);
+                    UIManager.Instance.timerText.enabled = false;
+                    UIManager.Instance.countText.enabled = false;
+                    UIManager.Instance.goldText.enabled = false;
+                    infoPanel.enabled = false;
+                    break;
+                case GameFlow.垃圾回收厂:
+                    playerController.gameType = GameType.Normal;
+                    playerController.ChangeAge(AgeType.Young);
+                    UIManager.Instance.timerText.enabled = false;
+                    UIManager.Instance.countText.enabled = false;
+                    UIManager.Instance.goldText.enabled = false;
+                    infoPanel.enabled = false;
+                    break;
+                case GameFlow.梦境2:
+                    playerController.gameType = GameType.Dream;
+                    playerController.ChangeAge(AgeType.Young);
+                    UIManager.Instance.timerText.enabled = true;
+                    UIManager.Instance.countText.enabled = true;
+                    UIManager.Instance.goldText.enabled = true;
+                    ageTimer = 0;
+                    maxTimer = 12;
+                    curCount = 0;
+                    maxCount = 6;
+                    GoldLimit = 8;
+                    infoPanel.enabled = false;
+                    break;
+                case GameFlow.矿洞:
+                    playerController.gameType = GameType.Normal;
+                    playerController.ChangeAge(AgeType.Young);
+                    UIManager.Instance.timerText.enabled = false;
+                    UIManager.Instance.countText.enabled = false;
+                    UIManager.Instance.goldText.enabled = false;
+                    infoPanel.enabled = false;
+                    break;
+            }
+            playerController.Gold = 0;
+            if (playerController.gameType != GameType.Normal) playerController.playerInput.Enable();
+        })
+        .AppendInterval(1f)
+        .Append(fadePanel.DOColor(new Color(0, 0, 0, 0), 1f));
     }
 }
 

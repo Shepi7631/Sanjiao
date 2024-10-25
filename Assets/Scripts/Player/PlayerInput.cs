@@ -21,6 +21,7 @@ public class PlayerInput : MonoBehaviour
     private void Awake()
     {
         playerInputActions = new PlayerInputActions();
+        playerInputActions.Enable();
     }
 
     public void Enable()
@@ -34,13 +35,4 @@ public class PlayerInput : MonoBehaviour
         playerInputActions.Disable();
     }
 
-    private void OnEnable()
-    {
-        Enable();
-    }
-
-    private void OnDisable()
-    {
-        Disable();
-    }
 }

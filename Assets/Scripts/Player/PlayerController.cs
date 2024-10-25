@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
     public Vector3 CurScale
     {
         get
-        {   
+        {
             if (curAgeType == AgeType.Children) return 0.4f * originScale;
             else if (curAgeType == AgeType.Young) return 0.6f * originScale;
             else return 0.6f * originScale;
@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
     {
         get
         {
-            if (curAgeType == AgeType.Older) return false;
+            if (curAgeType == AgeType.Older || gameType == GameType.Dig) return false;
             else return canJump;
         }
         private set => canJump = value;
@@ -99,7 +99,7 @@ public class PlayerController : MonoBehaviour
 
     #region ×é¼þ
     private PlayerStateMachine stateMachine;
-    private PlayerInput playerInput;
+    public PlayerInput playerInput;
     private Rigidbody2D rb;
     private GroundDetector groundDetector;
     private InteractableItemDetector interactableItemDetector;
@@ -195,8 +195,6 @@ public class PlayerController : MonoBehaviour
         switch (gameType)
         {
             case GameType.Normal:
-                if (!npcDetector.interactable) return;
-                DialogManager.Instance.StartConversation(npcDetector.GetNPC());
                 break;
             case GameType.Dream:
                 if (!interactableItemDetector.interactable || !CanIteract) return;
@@ -245,7 +243,6 @@ public class PlayerController : MonoBehaviour
         else curAgeType++;
 
         transform.localScale = CurScale;
-        stateMachine.SwitchState(PlayerStateType.Idle);
     }
 
     public void AgeBackward()
@@ -254,7 +251,6 @@ public class PlayerController : MonoBehaviour
         else curAgeType--;
 
         transform.localScale = CurScale;
-        stateMachine.SwitchState(PlayerStateType.Idle);
     }
 
     public void ChangeAge(AgeType ageType)
@@ -262,7 +258,6 @@ public class PlayerController : MonoBehaviour
         curAgeType = ageType;
 
         transform.localScale = CurScale;
-        stateMachine.SwitchState(PlayerStateType.Idle);
     }
 
 }

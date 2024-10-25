@@ -319,7 +319,6 @@ public class PlayerState_QTE : PlayerState
     public override void OnEnter()
     {
         base.OnEnter();
-        animator.Play("Dig");
         EventManager.OnMiningGameEndEvent += Exit;
         EventManager.MiningGameStartEvent(playerController.QTEBarBadLen, playerController.QTEBarGoodLen);
     }
@@ -355,6 +354,6 @@ public class PlayerState_QTE : PlayerState
             AudioManager.Instance.PlayEffect(AudioType.Lose);
         }
 
-        if (playerController.Gold >= 5) GameManager.Instance.NextLevel();
+        if (playerController.Gold >= 5) GameManager.Instance.NextLevel(GameFlow.¼ÒÖÐ);
     }
 }

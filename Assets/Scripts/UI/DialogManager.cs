@@ -9,9 +9,9 @@ using UnityEditor;
 public class DialogManager : SingletonBase<DialogManager>
 {
     public List<TextAsset> dialogDataFile;  //对话文本文件，csv格式   
-    public SpriteRenderer figure;//角色图像
-    public SpriteRenderer backGround;//对话框
-    public SpriteRenderer figure_bg;//角色图像底色
+    public Image figure;//角色图像
+    public Image dialogBox;//对话框
+    public Image figure_bg;//角色图像底色
     public TMP_Text nameText;//角色名字文本
     public TMP_Text dialogText; //对话内容文本
     public List<Sprite> sprites = new List<Sprite>();//角色图片列表
@@ -67,9 +67,9 @@ public class DialogManager : SingletonBase<DialogManager>
 
         nameText.gameObject.SetActive(false);
 
-        figure.gameObject.SetActive(false);
+        figure_bg.gameObject.SetActive(false);
 
-        backGround.gameObject.SetActive(false);
+        dialogBox.gameObject.SetActive(false);
         // ShowDialogRow();//修改下派生的函数
     }
     public void UpdateText(string _name, string _text)
@@ -135,7 +135,7 @@ public class DialogManager : SingletonBase<DialogManager>
                 dialogText.gameObject.SetActive(false);
                 nameText.gameObject.SetActive(false);
                 figure.gameObject.SetActive(false);
-                backGround.gameObject.SetActive(false);
+                dialogBox.gameObject.SetActive(false);
                 figure_bg.gameObject.SetActive(false);
                 dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置
                 Debug.Log("flagid changed");
@@ -195,7 +195,7 @@ public class DialogManager : SingletonBase<DialogManager>
                 dialogText.gameObject.SetActive(false);
                 nameText.gameObject.SetActive(false);
                 figure.gameObject.SetActive(false);
-                backGround.gameObject.SetActive(false);
+                dialogBox.gameObject.SetActive(false);
                 figure_bg.gameObject.SetActive(false);
                 dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
                 Debug.Log(cells[5]);
@@ -253,6 +253,7 @@ public class DialogManager : SingletonBase<DialogManager>
 
     }//产生效果的事件
 
+    [ContextMenu("Dosomething")]
     public void triggle()
     {
 
@@ -265,7 +266,7 @@ public class DialogManager : SingletonBase<DialogManager>
         figure.gameObject.SetActive(true);
         figure_bg.gameObject.SetActive(true);
 
-        backGround.gameObject.SetActive(true);
+        dialogBox.gameObject.SetActive(true);
 
         ReadText(dialogDataFile[state[0].dialogTextIndex]);
 
@@ -283,7 +284,7 @@ public class DialogManager : SingletonBase<DialogManager>
 
         figure.gameObject.SetActive(true);
 
-        backGround.gameObject.SetActive(true);
+        dialogBox.gameObject.SetActive(true);
 
         figure_bg.gameObject.SetActive(true);
         state[0].dialogTextIndex = TextIndex;
@@ -293,23 +294,4 @@ public class DialogManager : SingletonBase<DialogManager>
     }
 
 
-    public void StartConversation(NPC npc)
-    {
-        nextbutton.gameObject.SetActive(false);
-
-        dialogText.gameObject.SetActive(false);
-
-        nameText.gameObject.SetActive(false);
-
-        figure.gameObject.SetActive(false);
-
-        backGround.gameObject.SetActive(false);
-        
-        figure_bg.gameObject.SetActive(false);
-
-
-        ReadText(dialogDataFile[npc.myInfo.InfoList[0].textIndex]);
-
-        ShowDialogRow(npc.myInfo.InfoList[0].startPos);
-    }
 }
