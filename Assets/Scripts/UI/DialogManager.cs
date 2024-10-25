@@ -11,6 +11,7 @@ public class DialogManager : SingletonBase<DialogManager>
     public List<TextAsset> dialogDataFile;  //对话文本文件，csv格式   
     public SpriteRenderer figure;//角色图像
     public SpriteRenderer backGround;//对话框
+    public SpriteRenderer figure_bg;//角色图像底色
     public TMP_Text nameText;//角色名字文本
     public TMP_Text dialogText; //对话内容文本
     public List<Sprite> sprites = new List<Sprite>();//角色图片列表
@@ -32,26 +33,26 @@ public class DialogManager : SingletonBase<DialogManager>
     {
         //存立绘
         imageDic["主角"] = sprites[0];//主角立绘1
-        imageDic["NULL"] = sprites[1];//主角立绘2
+        imageDic["NULL"] = sprites[1];
         imageDic["女儿"] = sprites[2];
-        imageDic["小孩1"] = sprites[3];
-        imageDic["小孩2"] = sprites[4];
+        imageDic["站孩"] = sprites[3];
+        imageDic["蹲孩"] = sprites[4];
         imageDic["工友"] = sprites[5];
         imageDic["妻子"] = sprites[6];
         imageDic["药店老板"] = sprites[7];
         imageDic["买药的人"] = sprites[8];
         imageDic["护卫军"] = sprites[9];
-        imageDic["王朵"] = sprites[6];
-        imageDic["工头"] = sprites[5];
-        imageDic["老板娘"] = sprites[2];
-        imageDic["兜帽人"] = sprites[7];
+        imageDic["老板娘"] = sprites[10];
+        imageDic["王朵"] = sprites[11];
+        imageDic["兜帽人"] = sprites[12];
+        imageDic["工头"] = sprites[13];
 
         //将初始化的角色存入list中
         dialogstate mainrole = new dialogstate();
 
         mainrole.effect = "0";
         mainrole.name = "主角";
-        mainrole.dialogTextIndex = 6;
+        mainrole.dialogTextIndex = 0;
         state.Add(mainrole);
 
     }//初始化人物信息
@@ -135,6 +136,7 @@ public class DialogManager : SingletonBase<DialogManager>
                 nameText.gameObject.SetActive(false);
                 figure.gameObject.SetActive(false);
                 backGround.gameObject.SetActive(false);
+                figure_bg.gameObject.SetActive(false);
                 dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置
                 Debug.Log("flagid changed");
 
@@ -194,7 +196,7 @@ public class DialogManager : SingletonBase<DialogManager>
                 nameText.gameObject.SetActive(false);
                 figure.gameObject.SetActive(false);
                 backGround.gameObject.SetActive(false);
-
+                figure_bg.gameObject.SetActive(false);
                 dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
                 Debug.Log(cells[5]);
 
@@ -261,6 +263,7 @@ public class DialogManager : SingletonBase<DialogManager>
         nameText.gameObject.SetActive(true);
 
         figure.gameObject.SetActive(true);
+        figure_bg.gameObject.SetActive(true);
 
         backGround.gameObject.SetActive(true);
 
@@ -281,7 +284,10 @@ public class DialogManager : SingletonBase<DialogManager>
         figure.gameObject.SetActive(true);
 
         backGround.gameObject.SetActive(true);
+
+        figure_bg.gameObject.SetActive(true);
         state[0].dialogTextIndex = TextIndex;
+
         ReadText(dialogDataFile[state[0].dialogTextIndex]);
         ShowDialogRow(beginindex);
     }
@@ -289,15 +295,18 @@ public class DialogManager : SingletonBase<DialogManager>
 
     public void StartConversation(NPC npc)
     {
-        nextbutton.gameObject.SetActive(true);
+        nextbutton.gameObject.SetActive(false);
 
-        dialogText.gameObject.SetActive(true);
+        dialogText.gameObject.SetActive(false);
 
-        nameText.gameObject.SetActive(true);
+        nameText.gameObject.SetActive(false);
 
-        figure.gameObject.SetActive(true);
+        figure.gameObject.SetActive(false);
 
-        backGround.gameObject.SetActive(true);
+        backGround.gameObject.SetActive(false);
+        
+        figure_bg.gameObject.SetActive(false);
+
 
         ReadText(dialogDataFile[npc.myInfo.InfoList[0].textIndex]);
 
