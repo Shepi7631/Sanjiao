@@ -139,7 +139,7 @@ public class DialogManager : SingletonBase<DialogManager>
                 figure_bg.gameObject.SetActive(false);
                 dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置
                 Debug.Log("flagid changed");
-
+                GameManager.Instance.NextLevel(int.Parse(cells[8]));
                 break;
             }
         }
@@ -199,7 +199,7 @@ public class DialogManager : SingletonBase<DialogManager>
                 figure_bg.gameObject.SetActive(false);
                 dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
                 Debug.Log(cells[5]);
-
+                //Debug.Log((GameFlow)int.Parse(cells[7]));
                 break;
             }
 
@@ -254,7 +254,7 @@ public class DialogManager : SingletonBase<DialogManager>
     }//产生效果的事件
 
     [ContextMenu("Dosomething")]
-    public void triggle()
+    public void Triggle()
     {
 
         nextbutton.gameObject.SetActive(true);
@@ -273,7 +273,7 @@ public class DialogManager : SingletonBase<DialogManager>
         ShowDialogRow(dialogIndex);
     }
 
-    public void triggle(int TextIndex, int beginindex)
+    public void Triggle(int TextIndex, int beginindex)
     {
 
         nextbutton.gameObject.SetActive(true);

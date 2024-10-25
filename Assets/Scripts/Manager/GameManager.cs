@@ -21,7 +21,8 @@ public enum GameFlow
     ÀºÇò³¡ = 7,
     À¬»ø»ØÊÕ³§ = 8,
     ÃÎ¾³2 = 9,
-    ¿ó¶´ = 10
+    ¿ó¶´ = 10,
+    ¼àÓü = 11
 }
 
 [Serializable]
@@ -115,7 +116,7 @@ public class GameManager : SingletonBase<GameManager>
     [ContextMenu("DoSomething")]
     public void Remake()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
 
         ChangeLevel();
     }
@@ -240,6 +241,10 @@ public class GameManager : SingletonBase<GameManager>
             }
             playerController.Gold = 0;
             if (playerController.gameType != GameType.Normal) playerController.playerInput.Enable();
+            else if (playerController.gameType == GameType.Normal)
+                DOTween.Sequence()
+                .AppendInterval(1f)
+                .AppendCallback(() => DialogManager.Instance.Triggle());
         })
         .AppendInterval(1f)
         .Append(fadePanel.DOColor(new Color(0, 0, 0, 0), 1f));
