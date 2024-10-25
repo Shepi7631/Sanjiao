@@ -10,7 +10,12 @@ public class DialogManager : SingletonBase<DialogManager>
 {
     public List<TextAsset> dialogDataFile;  //对话文本文件，csv格式   
     public SpriteRenderer figure;//角色图像
+<<<<<<< Updated upstream:Assets/Scripts/UI/DialogManager.cs
     public SpriteRenderer backGround;//对话框
+=======
+    public SpriteRenderer dialogbox;//对话框
+    public SpriteRenderer figurebg;
+>>>>>>> Stashed changes:Assets/Scripts/UI/NPC.cs
     public TMP_Text nameText;//角色名字文本
     public TMP_Text dialogText; //对话内容文本
     public List<Sprite> sprites = new List<Sprite>();//角色图片列表
@@ -31,27 +36,35 @@ public class DialogManager : SingletonBase<DialogManager>
     private void Awake()
     {
         //存立绘
-        imageDic["主角"] = sprites[0];//主角立绘1
-        imageDic["NULL"] = sprites[1];//主角立绘2
+        imageDic["主角"] = sprites[0];
+        imageDic["NULL"] = sprites[1];
         imageDic["女儿"] = sprites[2];
-        imageDic["小孩1"] = sprites[3];
-        imageDic["小孩2"] = sprites[4];
+        imageDic["站孩"] = sprites[3];
+        imageDic["蹲孩"] = sprites[4];
         imageDic["工友"] = sprites[5];
         imageDic["妻子"] = sprites[6];
         imageDic["药店老板"] = sprites[7];
         imageDic["买药的人"] = sprites[8];
+<<<<<<< Updated upstream:Assets/Scripts/UI/DialogManager.cs
         imageDic["护卫军"] = sprites[9];
         imageDic["王朵"] = sprites[6];
         imageDic["工头"] = sprites[5];
         imageDic["老板娘"] = sprites[2];
         imageDic["兜帽人"] = sprites[7];
+=======
+        imageDic["兜帽人"] = sprites[9];       
+        imageDic["老板娘"] = sprites[10];
+        imageDic["王朵"] = sprites[11];
+        imageDic["工头"] = sprites[12];
+        imageDic["护卫军"] = sprites[13];
+>>>>>>> Stashed changes:Assets/Scripts/UI/NPC.cs
 
         //将初始化的角色存入list中
         dialogstate mainrole = new dialogstate();
 
         mainrole.effect = "0";
         mainrole.name = "主角";
-        mainrole.dialogTextIndex = 6;
+        mainrole.dialogTextIndex = 0;
         state.Add(mainrole);
 
     }//初始化人物信息
@@ -134,7 +147,12 @@ public class DialogManager : SingletonBase<DialogManager>
                 dialogText.gameObject.SetActive(false);
                 nameText.gameObject.SetActive(false);
                 figure.gameObject.SetActive(false);
+<<<<<<< Updated upstream:Assets/Scripts/UI/DialogManager.cs
                 backGround.gameObject.SetActive(false);
+=======
+                dialogbox.gameObject.SetActive(false);
+                figurebg.gameObject.SetActive(false);
+>>>>>>> Stashed changes:Assets/Scripts/UI/NPC.cs
                 dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置
                 Debug.Log("flagid changed");
 
@@ -183,6 +201,7 @@ public class DialogManager : SingletonBase<DialogManager>
             else if (cells[0] == "END" && int.Parse(cells[1]) == dialogIndex)
             {
 
+<<<<<<< Updated upstream:Assets/Scripts/UI/DialogManager.cs
                 /*测试用
                   UpdateText(cells[7], cells[3]);
                   UpdateImage(cells[2]);
@@ -197,6 +216,16 @@ public class DialogManager : SingletonBase<DialogManager>
 
                 dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
                 Debug.Log(cells[5]);
+=======
+                        nextbutton.gameObject.SetActive(false);
+                        dialogText.gameObject.SetActive(false);
+                        nameText.gameObject.SetActive(false);
+                        figure.gameObject.SetActive(false);
+                        dialogbox.gameObject.SetActive(false);
+                        figurebg.gameObject.SetActive(false);
+                        dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
+                        Debug.Log(cells[5]);
+>>>>>>> Stashed changes:Assets/Scripts/UI/NPC.cs
 
                 break;
             }
@@ -253,6 +282,28 @@ public class DialogManager : SingletonBase<DialogManager>
 
     public void triggle()
     {
+<<<<<<< Updated upstream:Assets/Scripts/UI/DialogManager.cs
+=======
+       
+            nextbutton.gameObject.SetActive(true);
+
+            dialogText.gameObject.SetActive(true);
+
+            nameText.gameObject.SetActive(true);
+
+            figure.gameObject.SetActive(true);
+
+            dialogbox.gameObject.SetActive(true);
+
+            figurebg.gameObject.SetActive(true);
+
+        ReadText(dialogDataFile[state[0].dialogTextIndex]);
+        ShowDialogRow(dialogIndex);
+    }
+
+    public void triggle(int TextIndex,int beginindex)
+    {
+>>>>>>> Stashed changes:Assets/Scripts/UI/NPC.cs
 
         nextbutton.gameObject.SetActive(true);
 
@@ -293,6 +344,7 @@ public class DialogManager : SingletonBase<DialogManager>
 
         dialogText.gameObject.SetActive(true);
 
+<<<<<<< Updated upstream:Assets/Scripts/UI/DialogManager.cs
         nameText.gameObject.SetActive(true);
 
         figure.gameObject.SetActive(true);
@@ -302,5 +354,11 @@ public class DialogManager : SingletonBase<DialogManager>
         ReadText(dialogDataFile[npc.myInfo.InfoList[0].textIndex]);
 
         ShowDialogRow(npc.myInfo.InfoList[0].startPos);
+=======
+        dialogbox.gameObject.SetActive(false);
+
+        figurebg.gameObject.SetActive(false);
+        // ShowDialogRow();//修改下派生的函数
+>>>>>>> Stashed changes:Assets/Scripts/UI/NPC.cs
     }
 }
