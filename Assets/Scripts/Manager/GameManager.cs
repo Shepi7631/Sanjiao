@@ -45,7 +45,7 @@ public class GameManager : SingletonBase<GameManager>
 
     private void Update()
     {
-        if (curLevel == 2)
+        if (curLevel == 3)
         {
             ageTimer += Time.deltaTime;
             if (ageTimer >= maxTimer)
@@ -56,6 +56,18 @@ public class GameManager : SingletonBase<GameManager>
                 if (curCount >= maxCount) Remake();
             }
         }
+        else if (curLevel == 4)
+        {
+            ageTimer += Time.deltaTime;
+            if (ageTimer >= maxTimer)
+            {
+                playerController.AgeForward();
+                ageTimer = 0;
+                curCount++;
+                if (curCount >= maxCount) Remake();
+            }
+        }
+
         else if (curLevel == 1)
         {
             miningGameTimer += Time.deltaTime;
@@ -65,9 +77,13 @@ public class GameManager : SingletonBase<GameManager>
                 NextLevel();
             }
         }
-        UIManager.Instance.timerText.text = "衰老倒计时：" + ageTimer.ToString("f2") + "/" + maxTimer;
-        UIManager.Instance.countText.text = "衰老次数：" + curCount.ToString() + "/" + maxCount;
-        UIManager.Instance.goldText.text = "收集品数量" + playerController.Gold + "/" + GoldLimit;
+
+        if (playerController.gameType == GameType.Dream)
+        {
+            UIManager.Instance.timerText.text = "衰老倒计时：" + ageTimer.ToString("f2") + "/" + maxTimer;
+            UIManager.Instance.countText.text = "衰老次数：" + curCount.ToString() + "/" + maxCount;
+            UIManager.Instance.goldText.text = "收集品数量" + playerController.Gold + "/" + GoldLimit;
+        }
     }
 
     public void NextLevel()
@@ -99,22 +115,52 @@ public class GameManager : SingletonBase<GameManager>
             case 0:
                 playerController.gameType = GameType.Dream;
                 playerController.ChangeAge(AgeType.Children);
+                ageTimer = 0;
+                maxTimer = 0;
+                curCount = 0;
+                maxCount = 0;
+                GoldLimit = 0;
                 infoPanel.enabled = false;
                 break;
             case 1:
                 playerController.gameType = GameType.Dig;
                 playerController.ChangeAge(AgeType.Young);
                 MiningGameManager.Instance.InitGame(-75, 75, 8, 16);
+                ageTimer = 0;
+                maxTimer = 0;
+                curCount = 0;
+                maxCount = 0;
+                GoldLimit = 0;
                 infoPanel.enabled = true;
                 break;
             case 2:
+                playerController.gameType = GameType.Normal;
+                playerController.ChangeAge(AgeType.Young);
+                ageTimer = 0;
+                maxTimer = 0;
+                curCount = 0;
+                maxCount = 0;
+                GoldLimit = 0;
+                infoPanel.enabled = false;
+                break;
+            case 3:
                 playerController.gameType = GameType.Dream;
                 playerController.ChangeAge(AgeType.Young);
                 ageTimer = 0;
-                maxTimer = 15;
+                maxTimer = 12;
                 curCount = 0;
                 maxCount = 5;
                 GoldLimit = 3;
+                infoPanel.enabled = false;
+                break;
+            case 4:
+                playerController.gameType = GameType.Dream;
+                playerController.ChangeAge(AgeType.Young);
+                ageTimer = 0;
+                maxTimer = 12;
+                curCount = 0;
+                maxCount = 6;
+                GoldLimit = 8;
                 infoPanel.enabled = false;
                 break;
         }

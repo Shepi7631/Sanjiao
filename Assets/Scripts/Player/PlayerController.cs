@@ -52,10 +52,10 @@ public class PlayerController : MonoBehaviour
     public Vector3 CurScale
     {
         get
-        {
+        {   
             if (curAgeType == AgeType.Children) return 0.4f * originScale;
-            else if (curAgeType == AgeType.Young) return 0.8f * originScale;
-            else return 0.8f * originScale;
+            else if (curAgeType == AgeType.Young) return 0.6f * originScale;
+            else return 0.6f * originScale;
         }
     }
     public bool Warning => specialAreaDetector.InSpecialArea;
@@ -107,6 +107,7 @@ public class PlayerController : MonoBehaviour
     private Canvas canvas;
     public QTEBar qteBar;
     public SpecialAreaDetector specialAreaDetector;
+    public NPCDetector npcDetector;
     public List<GameObject> specialList = new List<GameObject>();
     #endregion
 
@@ -121,6 +122,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         originGravityScale = rb.gravityScale;
         specialAreaDetector = GetComponentInChildren<SpecialAreaDetector>();
+        npcDetector = GetComponentInChildren<NPCDetector>();
     }
 
     private void Update()
@@ -193,6 +195,8 @@ public class PlayerController : MonoBehaviour
         switch (gameType)
         {
             case GameType.Normal:
+                if (!npcDetector.interactable) return;
+                DialogManager.Instance.StartConversation(npcDetector.GetNPC());
                 break;
             case GameType.Dream:
                 if (!interactableItemDetector.interactable || !CanIteract) return;

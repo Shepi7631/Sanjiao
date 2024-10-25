@@ -28,7 +28,7 @@ public class InteractableObject : MonoBehaviour
     {
         if (isPlayerInside && Input.GetKeyDown(KeyCode.E))
         {
-            NPC npc = GetComponent<NPC>();
+            DialogManager npc = GetComponent<DialogManager>();
             if (npc != null)
             {
                 //int newDialogTextIndex = 1; // 假设的新对话文件索引

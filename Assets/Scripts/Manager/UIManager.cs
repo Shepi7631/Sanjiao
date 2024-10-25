@@ -12,6 +12,7 @@ public class UIManager : SingletonBase<UIManager>
     public Text timerText;
     public Text countText;
     public Text goldText;
+    public Text conversationText;
 
     private void Awake()
     {

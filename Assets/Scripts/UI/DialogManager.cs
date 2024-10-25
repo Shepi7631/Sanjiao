@@ -6,12 +6,11 @@ using UnityEngine.UI;
 using Cinemachine;
 using UnityEditor;
 
-public class NPC : MonoBehaviour
+public class DialogManager : SingletonBase<DialogManager>
 {
-   
     public List<TextAsset> dialogDataFile;  //对话文本文件，csv格式   
     public SpriteRenderer figure;//角色图像
-    public SpriteRenderer dialogbox;//对话框
+    public SpriteRenderer backGround;//对话框
     public TMP_Text nameText;//角色名字文本
     public TMP_Text dialogText; //对话内容文本
     public List<Sprite> sprites = new List<Sprite>();//角色图片列表
@@ -20,14 +19,15 @@ public class NPC : MonoBehaviour
     public GameObject optionButton;//选项按钮
     public Transform buttonGroup;//选项按钮的排列方式
     public int dialogIndex;//保存当前对话索引值
-    public List<dialogstate> state=new List<dialogstate>();//保存角色状态
+    public List<dialogstate> state = new List<dialogstate>();//保存角色状态
     public dialogstate currentCharacter;
     public string[] dialogRows;  //存储分割的对话文本
-        
+
     public void OnClickNext()
     {
         ShowDialogRow();
     }//绑定按钮，点击后会显示下一个文本
+
     private void Awake()
     {
         //存立绘
@@ -41,27 +41,43 @@ public class NPC : MonoBehaviour
         imageDic["药店老板"] = sprites[7];
         imageDic["买药的人"] = sprites[8];
         imageDic["护卫军"] = sprites[9];
-        imageDic["王朵"]= sprites[6];
+        imageDic["王朵"] = sprites[6];
         imageDic["工头"] = sprites[5];
         imageDic["老板娘"] = sprites[2];
         imageDic["兜帽人"] = sprites[7];
 
         //将初始化的角色存入list中
         dialogstate mainrole = new dialogstate();
-       
+
         mainrole.effect = "0";
         mainrole.name = "主角";
         mainrole.dialogTextIndex = 6;
         state.Add(mainrole);
-      
 
     }//初始化人物信息
+
+    private void Start()
+    {
+        ReadText(dialogDataFile[state[0].dialogTextIndex]);
+
+        nextbutton.gameObject.SetActive(false);
+
+        dialogText.gameObject.SetActive(false);
+
+        nameText.gameObject.SetActive(false);
+
+        figure.gameObject.SetActive(false);
+
+        backGround.gameObject.SetActive(false);
+        // ShowDialogRow();//修改下派生的函数
+    }
     public void UpdateText(string _name, string _text)
     {
         nameText.text = _name;
         dialogText.text = _text;
 
     }//更新文本
+
     public void UpdateImage(string _name)
     {
         figure.sprite = imageDic[_name];
@@ -70,22 +86,22 @@ public class NPC : MonoBehaviour
     public void ReadText(TextAsset _textAsset)
     {
         dialogRows = _textAsset.text.Split('\n');
-  
-         Debug.Log("load success");
+
+        Debug.Log("load success");
     }//读取对话文件
     public void ShowDialogRow()//展示对话文件对应的对话与立绘 
     {
-        
-        for (int i =0;i<dialogRows.Length;i++)
+
+        for (int i = 0; i < dialogRows.Length; i++)
         {
             string[] cells = dialogRows[i].Split(',');
-            if (cells[0]=="#"&& int.Parse(cells[1]) == dialogIndex)
+            if (cells[0] == "#" && int.Parse(cells[1]) == dialogIndex)
             {
-                if(cells[6] == "1")//检测为真的时候，修改跳转索引值（这里是主角）
+                if (cells[6] == "1")//检测为真的时候，修改跳转索引值（这里是主角）
                 {
 
                     foreach (var person in state)
-                    {                        
+                    {
                         if (person.name == "主角")
                         {
                             cells[4] = person.effect;//主角的effect的修改在另外的函数中已经执行了
@@ -96,10 +112,10 @@ public class NPC : MonoBehaviour
                 }
                 UpdateText(cells[7], cells[3]);//cells[7]是人名，cells[3]是对话内容
                 UpdateImage(cells[2]);
-                dialogIndex =int.Parse( cells[4]);//cells[4]是要跳转的索引值
+                dialogIndex = int.Parse(cells[4]);//cells[4]是要跳转的索引值
                 break;
             }
-            else if (cells[0]=="&"&& int.Parse(cells[1]) == dialogIndex)
+            else if (cells[0] == "&" && int.Parse(cells[1]) == dialogIndex)
             {
                 nextbutton.gameObject.SetActive(false);
                 GenerateOption(i);
@@ -113,15 +129,15 @@ public class NPC : MonoBehaviour
                 UpdateImage(cells[2]);
                 dialogIndex = int.Parse(cells[4]);
                 */
-                
+
                 nextbutton.gameObject.SetActive(false);
                 dialogText.gameObject.SetActive(false);
                 nameText.gameObject.SetActive(false);
                 figure.gameObject.SetActive(false);
-                dialogbox.gameObject.SetActive(false);
+                backGround.gameObject.SetActive(false);
                 dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置
                 Debug.Log("flagid changed");
-                
+
                 break;
             }
         }
@@ -129,130 +145,113 @@ public class NPC : MonoBehaviour
     }
     public void ShowDialogRow(int i)
     {
-        
-        
         for (int j = 1; j < dialogRows.Length; j++)
         {
 
             string[] cells = dialogRows[j].Split(',');
             if (int.Parse(cells[1]) < i)
                 continue;
-                
-                    if (cells[0] == "#" && int.Parse(cells[1]) == dialogIndex)
+
+            if (cells[0] == "#" && int.Parse(cells[1]) == dialogIndex)
+            {
+                if (cells[6] == "1")//检测为真的时候，修改跳转索引值（这里是主角）
+                {
+
+                    foreach (var person in state)
                     {
-                        if (cells[6] == "1")//检测为真的时候，修改跳转索引值（这里是主角）
+                        //Debug.Log(person.effect);
+                        if (person.name == "主角")
                         {
-
-                            foreach (var person in state)
-                            {
-                                //Debug.Log(person.effect);
-                                if (person.name == "主角")
-                                {
-                                    cells[4] = person.effect;//主角的effect的修改在另外的函数中已经执行了
-                                    person.effect = "";
-                                }
-                            }
-
+                            cells[4] = person.effect;//主角的effect的修改在另外的函数中已经执行了
+                            person.effect = "";
                         }
-                        //Debug.Log("将会跳转到");
-                        //Debug.Log(cells[4]);
-                        UpdateText(cells[7], cells[3]);//cells[7]是人名，cells[3]是对话内容
-                        UpdateImage(cells[2]);
-                        dialogIndex = int.Parse(cells[4]);//cells[4]是要跳转的索引值
-                        break;
                     }
-                    else if (cells[0] == "&" && int.Parse(cells[1]) == dialogIndex)
-                    {
-                        nextbutton.gameObject.SetActive(false);
-                        GenerateOption(j);
-                    }
-                    else if (cells[0] == "END" && int.Parse(cells[1]) == dialogIndex)
-                    {
 
-                        /*测试用
-                          UpdateText(cells[7], cells[3]);
-                          UpdateImage(cells[2]);
-                          dialogIndex = int.Parse(cells[4]);
-                                        */
+                }
+                //Debug.Log("将会跳转到");
+                //Debug.Log(cells[4]);
+                UpdateText(cells[7], cells[3]);//cells[7]是人名，cells[3]是对话内容
+                UpdateImage(cells[2]);
+                dialogIndex = int.Parse(cells[4]);//cells[4]是要跳转的索引值
+                break;
+            }
+            else if (cells[0] == "&" && int.Parse(cells[1]) == dialogIndex)
+            {
+                nextbutton.gameObject.SetActive(false);
+                GenerateOption(j);
+            }
+            else if (cells[0] == "END" && int.Parse(cells[1]) == dialogIndex)
+            {
 
-                        nextbutton.gameObject.SetActive(false);
-                        dialogText.gameObject.SetActive(false);
-                        nameText.gameObject.SetActive(false);
-                        figure.gameObject.SetActive(false);
-                        dialogbox.gameObject.SetActive(false);
+                /*测试用
+                  UpdateText(cells[7], cells[3]);
+                  UpdateImage(cells[2]);
+                  dialogIndex = int.Parse(cells[4]);
+                                */
 
-                        dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
-                        Debug.Log(cells[5]);
+                nextbutton.gameObject.SetActive(false);
+                dialogText.gameObject.SetActive(false);
+                nameText.gameObject.SetActive(false);
+                figure.gameObject.SetActive(false);
+                backGround.gameObject.SetActive(false);
+
+                dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
+                Debug.Log(cells[5]);
 
                 break;
-                    }
-                
+            }
 
-            
+
+
         }
     }
     public void GenerateOption(int _index)
     {
         string[] cells = dialogRows[_index].Split(',');
-        if (cells[0] == "&") 
+        if (cells[0] == "&")
         {
             GameObject button = Instantiate(optionButton, buttonGroup);//绑定按钮实例
 
             button.GetComponentInChildren<TMP_Text>().text = cells[3];//cells[3]是对话内容
             button.GetComponent<Button>().onClick.AddListener(
-                delegate 
+                delegate
                 {
-                    if (cells[5] != " ") 
-                    OptionEffect(cells[5], cells[7]);//修改state队列里主角的索引值
+                    if (cells[5] != " ")
+                        OptionEffect(cells[5], cells[7]);//修改state队列里主角的索引值
                     OnOptionClick(int.Parse(cells[4])); //cells[4]是需要跳转的序号
-                   
+
                 }
             );
             GenerateOption(_index + 1);
         }
-    
-     }//选项按钮绑定事件
+
+    }//选项按钮绑定事件
     public void OnOptionClick(int _id)
     {
         dialogIndex = _id;
         ShowDialogRow();
-        for(int i=0;i<buttonGroup.childCount;i++)
+        for (int i = 0; i < buttonGroup.childCount; i++)
         {
             Destroy(buttonGroup.GetChild(i).gameObject);
-            
-         }
+
+        }
         nextbutton.gameObject.SetActive(true);
     }//选项按键事件
-    public void OptionEffect(string _effect,string _name)
+
+    public void OptionEffect(string _effect, string _name)
     {
         foreach (var person in state)
         {
-            if (person.name =="主角")//如果有多个角色的话需要把主角改为_name
+            if (person.name == "主角")//如果有多个角色的话需要把主角改为_name
             {
                 person.effect = _effect;//将选项带来的影响赋值给主角的effect
                 Debug.Log(_name);
-             }
+            }
         }
-      
+
     }//产生效果的事件
+
     public void triggle()
-    {
-       
-            nextbutton.gameObject.SetActive(true);
-
-            dialogText.gameObject.SetActive(true);
-
-            nameText.gameObject.SetActive(true);
-
-            figure.gameObject.SetActive(true);
-
-            dialogbox.gameObject.SetActive(true);
-
-        ReadText(dialogDataFile[state[0].dialogTextIndex]);
-        ShowDialogRow(dialogIndex);
-    }
-
-    public void triggle(int TextIndex,int beginindex)
     {
 
         nextbutton.gameObject.SetActive(true);
@@ -263,24 +262,45 @@ public class NPC : MonoBehaviour
 
         figure.gameObject.SetActive(true);
 
-        dialogbox.gameObject.SetActive(true);
+        backGround.gameObject.SetActive(true);
+
+        ReadText(dialogDataFile[state[0].dialogTextIndex]);
+
+        ShowDialogRow(dialogIndex);
+    }
+
+    public void triggle(int TextIndex, int beginindex)
+    {
+
+        nextbutton.gameObject.SetActive(true);
+
+        dialogText.gameObject.SetActive(true);
+
+        nameText.gameObject.SetActive(true);
+
+        figure.gameObject.SetActive(true);
+
+        backGround.gameObject.SetActive(true);
         state[0].dialogTextIndex = TextIndex;
         ReadText(dialogDataFile[state[0].dialogTextIndex]);
         ShowDialogRow(beginindex);
     }
-    private void Start()
-    {        
-               ReadText(dialogDataFile[state[0].dialogTextIndex]);
-        nextbutton.gameObject.SetActive(false);
 
-        dialogText.gameObject.SetActive(false);
 
-        nameText.gameObject.SetActive(false);
+    public void StartConversation(NPC npc)
+    {
+        nextbutton.gameObject.SetActive(true);
 
-        figure.gameObject.SetActive(false);
+        dialogText.gameObject.SetActive(true);
 
-        dialogbox.gameObject.SetActive(false);
-        // ShowDialogRow();//修改下派生的函数
+        nameText.gameObject.SetActive(true);
+
+        figure.gameObject.SetActive(true);
+
+        backGround.gameObject.SetActive(true);
+
+        ReadText(dialogDataFile[npc.myInfo.InfoList[0].textIndex]);
+
+        ShowDialogRow(npc.myInfo.InfoList[0].startPos);
     }
-
 }
