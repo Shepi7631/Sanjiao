@@ -47,6 +47,8 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region ×´Ì¬
+    public PlayerStateType prePlayerStateType;
+    public PlayerStateType curPlayerStateType;
     public AgeType curAgeType = AgeType.Children;
     private Vector3 originScale = new Vector3(1, 1, 1);
     public Vector3 CurScale
@@ -93,8 +95,8 @@ public class PlayerController : MonoBehaviour
 
     public GameType gameType;
     private int gold = 0;
-    //public PlayerStateType curPlayerState;
-    //public PlayerStateType prePlayerState;
+    //public PlayerStateType curPlayerStateType;
+    //public PlayerStateType prePlayerStateType;
     #endregion
 
     #region ×é¼þ
@@ -242,6 +244,7 @@ public class PlayerController : MonoBehaviour
         else if (curAgeType == AgeType.Children && Warning) GameManager.Instance.Remake();
         else curAgeType++;
 
+        if (curPlayerStateType != PlayerStateType.Jump) stateMachine.SwitchState(curPlayerStateType);
         transform.localScale = CurScale;
     }
 
@@ -250,6 +253,7 @@ public class PlayerController : MonoBehaviour
         if (curAgeType == AgeType.Children) curAgeType = AgeType.Children;
         else curAgeType--;
 
+        if (curPlayerStateType != PlayerStateType.Jump) stateMachine.SwitchState(curPlayerStateType);
         transform.localScale = CurScale;
     }
 
@@ -257,6 +261,7 @@ public class PlayerController : MonoBehaviour
     {
         curAgeType = ageType;
 
+        if (curPlayerStateType != PlayerStateType.Jump) stateMachine.SwitchState(curPlayerStateType);
         transform.localScale = CurScale;
     }
 

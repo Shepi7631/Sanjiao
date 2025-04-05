@@ -11,7 +11,7 @@ public class MiningGameManager : SingletonBase<MiningGameManager>
     private float farDistance = 5f;
 
     [SerializeField] private GameObject prefab;
-    private List<float> mineralPosList = new List<float>();
+    public List<float> mineralPosList = new List<float>();
 
     private void OnEnable()
     {

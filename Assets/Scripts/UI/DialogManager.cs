@@ -5,6 +5,8 @@ using TMPro;
 using UnityEngine.UI;
 using Cinemachine;
 using UnityEditor;
+using DG.Tweening;
+using UnityEngine.SceneManagement;
 
 public class DialogManager : SingletonBase<DialogManager>
 {
@@ -12,17 +14,27 @@ public class DialogManager : SingletonBase<DialogManager>
     public Image figure;//角色图像
     public Image dialogBox;//对话框
     public Image figure_bg;//角色图像底色
-    public TMP_Text nameText;//角色名字文本
-    public TMP_Text dialogText; //对话内容文本
+    public Text nameText;//角色名字文本
+    public Text dialogText; //对话内容文本
     public List<Sprite> sprites = new List<Sprite>();//角色图片列表
     Dictionary<string, Sprite> imageDic = new Dictionary<string, Sprite>();//对应立绘名与角色图片的字典
     public Button nextbutton;//“继续”按钮
     public GameObject optionButton;//选项按钮
     public Transform buttonGroup;//选项按钮的排列方式
-    public int dialogIndex;//保存当前对话索引值
+    private int dialogIndex;//保存当前对话索引值
     public List<dialogstate> state = new List<dialogstate>();//保存角色状态
     public dialogstate currentCharacter;
     public string[] dialogRows;  //存储分割的对话文本
+
+    public int DialogIndex
+    {
+        get => dialogIndex;
+        set
+        {
+            dialogIndex = value;
+            PlayerPrefs.SetInt("DialogIndex", value);
+        }
+    }
 
     public void OnClickNext()
     {
@@ -46,6 +58,8 @@ public class DialogManager : SingletonBase<DialogManager>
         imageDic["王朵"] = sprites[11];
         imageDic["兜帽人"] = sprites[12];
         imageDic["工头"] = sprites[13];
+
+        DialogIndex = PlayerPrefs.GetInt("DialogIndex");
 
         //将初始化的角色存入list中
         dialogstate mainrole = new dialogstate();
@@ -82,6 +96,7 @@ public class DialogManager : SingletonBase<DialogManager>
     public void UpdateImage(string _name)
     {
         figure.sprite = imageDic[_name];
+        figure.SetNativeSize();
 
     }//更新图像
     public void ReadText(TextAsset _textAsset)
@@ -96,7 +111,7 @@ public class DialogManager : SingletonBase<DialogManager>
         for (int i = 0; i < dialogRows.Length; i++)
         {
             string[] cells = dialogRows[i].Split(',');
-            if (cells[0] == "#" && int.Parse(cells[1]) == dialogIndex)
+            if (cells[0] == "#" && int.Parse(cells[1]) == DialogIndex)
             {
                 if (cells[6] == "1")//检测为真的时候，修改跳转索引值（这里是主角）
                 {
@@ -113,15 +128,15 @@ public class DialogManager : SingletonBase<DialogManager>
                 }
                 UpdateText(cells[7], cells[3]);//cells[7]是人名，cells[3]是对话内容
                 UpdateImage(cells[2]);
-                dialogIndex = int.Parse(cells[4]);//cells[4]是要跳转的索引值
+                DialogIndex = int.Parse(cells[4]);//cells[4]是要跳转的索引值
                 break;
             }
-            else if (cells[0] == "&" && int.Parse(cells[1]) == dialogIndex)
+            else if (cells[0] == "&" && int.Parse(cells[1]) == DialogIndex)
             {
                 nextbutton.gameObject.SetActive(false);
                 GenerateOption(i);
             }
-            else if (cells[0] == "END" && int.Parse(cells[1]) == dialogIndex)
+            else if (cells[0] == "END" && int.Parse(cells[1]) == DialogIndex)
             {
 
 
@@ -137,9 +152,13 @@ public class DialogManager : SingletonBase<DialogManager>
                 figure.gameObject.SetActive(false);
                 dialogBox.gameObject.SetActive(false);
                 figure_bg.gameObject.SetActive(false);
-                dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置
+                DialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置
                 Debug.Log("flagid changed");
-                GameManager.Instance.NextLevel(int.Parse(cells[8]));
+
+                if (int.Parse(cells[8]) == 12)
+                    SceneManager.LoadScene(2);
+
+                else GameManager.Instance.NextLevel(int.Parse(cells[8]));
                 break;
             }
         }
@@ -154,7 +173,7 @@ public class DialogManager : SingletonBase<DialogManager>
             if (int.Parse(cells[1]) < i)
                 continue;
 
-            if (cells[0] == "#" && int.Parse(cells[1]) == dialogIndex)
+            if (cells[0] == "#" && int.Parse(cells[1]) == DialogIndex)
             {
                 if (cells[6] == "1")//检测为真的时候，修改跳转索引值（这里是主角）
                 {
@@ -174,15 +193,15 @@ public class DialogManager : SingletonBase<DialogManager>
                 //Debug.Log(cells[4]);
                 UpdateText(cells[7], cells[3]);//cells[7]是人名，cells[3]是对话内容
                 UpdateImage(cells[2]);
-                dialogIndex = int.Parse(cells[4]);//cells[4]是要跳转的索引值
+                DialogIndex = int.Parse(cells[4]);//cells[4]是要跳转的索引值
                 break;
             }
-            else if (cells[0] == "&" && int.Parse(cells[1]) == dialogIndex)
+            else if (cells[0] == "&" && int.Parse(cells[1]) == DialogIndex)
             {
                 nextbutton.gameObject.SetActive(false);
                 GenerateOption(j);
             }
-            else if (cells[0] == "END" && int.Parse(cells[1]) == dialogIndex)
+            else if (cells[0] == "END" && int.Parse(cells[1]) == DialogIndex)
             {
 
                 /*测试用
@@ -197,7 +216,7 @@ public class DialogManager : SingletonBase<DialogManager>
                 figure.gameObject.SetActive(false);
                 dialogBox.gameObject.SetActive(false);
                 figure_bg.gameObject.SetActive(false);
-                dialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
+                DialogIndex = int.Parse(cells[5]);//赋一个flagid值用于确定下次开始的位置                
                 Debug.Log(cells[5]);
                 //Debug.Log((GameFlow)int.Parse(cells[7]));
                 break;
@@ -214,7 +233,7 @@ public class DialogManager : SingletonBase<DialogManager>
         {
             GameObject button = Instantiate(optionButton, buttonGroup);//绑定按钮实例
 
-            button.GetComponentInChildren<TMP_Text>().text = cells[3];//cells[3]是对话内容
+            button.GetComponentInChildren<Text>().text = cells[3];//cells[3]是对话内容
             button.GetComponent<Button>().onClick.AddListener(
                 delegate
                 {
@@ -230,7 +249,7 @@ public class DialogManager : SingletonBase<DialogManager>
     }//选项按钮绑定事件
     public void OnOptionClick(int _id)
     {
-        dialogIndex = _id;
+        DialogIndex = _id;
         ShowDialogRow();
         for (int i = 0; i < buttonGroup.childCount; i++)
         {
@@ -270,11 +289,12 @@ public class DialogManager : SingletonBase<DialogManager>
 
         ReadText(dialogDataFile[state[0].dialogTextIndex]);
 
-        ShowDialogRow(dialogIndex);
+        ShowDialogRow(DialogIndex);
     }
 
-    public void Triggle(int TextIndex, int beginindex)
+    public void Triggle(int beginindex)
     {
+        DialogIndex = beginindex;
 
         nextbutton.gameObject.SetActive(true);
 
@@ -287,9 +307,9 @@ public class DialogManager : SingletonBase<DialogManager>
         dialogBox.gameObject.SetActive(true);
 
         figure_bg.gameObject.SetActive(true);
-        state[0].dialogTextIndex = TextIndex;
 
         ReadText(dialogDataFile[state[0].dialogTextIndex]);
+
         ShowDialogRow(beginindex);
     }
 

@@ -354,6 +354,6 @@ public class PlayerState_QTE : PlayerState
             AudioManager.Instance.PlayEffect(AudioType.Lose);
         }
 
-        if (playerController.Gold >= 5) GameManager.Instance.NextLevel(GameFlow.家中);
+        if (playerController.Gold >= 5 || MiningGameManager.Instance.mineralPosList.Count == 0) GameManager.Instance.NextLevel(GameFlow.矿洞门口);
     }
 }

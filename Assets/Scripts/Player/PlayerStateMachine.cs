@@ -70,9 +70,9 @@ public class PlayerStateMachine : MonoBehaviour
         if (curState != null)
         {
             curState.OnExit();
-            //playerController.prePlayerState = playerController.curPlayerState;
+            playerController.prePlayerStateType = playerController.curPlayerStateType;
         }
-        ///playerController.curPlayerState = state;
+        playerController.curPlayerStateType = state;
         curState = stateDic[state];
         curState.OnEnter();
         Debug.Log(state);

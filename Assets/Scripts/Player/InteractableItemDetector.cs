@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class InteractableItemDetector : MonoBehaviour
 {
+    public PlayerController playerController;
     private CircleCollider2D circleCollider2D;
     private InteractableItem curItem;
     public bool interactable = false;
@@ -22,12 +23,20 @@ public class InteractableItemDetector : MonoBehaviour
             curItem = collision.GetComponent<InteractableItem>();
             interactable = true;
             EventManager.ChangeInteractInfoEvent(interactable);
-            if (curItem.curState == ItemStateType.Interact)
-                UIManager.Instance.SetTipsInfo("单击进行互动");
-            else if (curItem.curState == ItemStateType.Close)
-                UIManager.Instance.SetTipsInfo("该道具暂时不能使用");
-            else if (curItem.curState == ItemStateType.Used)
-                UIManager.Instance.SetTipsInfo("该道具已被使用过");
+            if(curItem.itemName=="Car" && playerController.curAgeType!=AgeType.Older)
+            {
+                UIManager.Instance.SetTipsInfo("只有老年状态才能坐车");
+            }
+            else
+            {
+                if (curItem.curState == ItemStateType.Interact)
+                    UIManager.Instance.SetTipsInfo("单击进行互动");
+                else if (curItem.curState == ItemStateType.Close)
+                    UIManager.Instance.SetTipsInfo("该道具暂时不能使用");
+                else if (curItem.curState == ItemStateType.Used)
+                    UIManager.Instance.SetTipsInfo("该道具已被使用过");
+            }
+
         }
     }
 

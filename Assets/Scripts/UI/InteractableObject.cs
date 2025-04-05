@@ -34,7 +34,7 @@ public class InteractableObject : MonoBehaviour
                 //int newDialogTextIndex = 1; // 假设的新对话文件索引
                 //int newDialogIndex = 0;     // 假设的新对话起始位置
                                 
-                npc.Triggle(1,0);  // 触发对话
+                //npc.Triggle(1,0);  // 触发对话
                 Debug.Log("has changed");
             }
         }

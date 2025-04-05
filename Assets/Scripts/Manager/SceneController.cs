@@ -8,6 +8,7 @@ public class SceneController : MonoBehaviour
     public void GetStart()
     {
         PlayerPrefs.SetInt("Level", 0);
+        PlayerPrefs.SetInt("DialogIndex", 0);
         PlayerPrefs.Save();
         SceneManager.LoadScene(1);
     }
